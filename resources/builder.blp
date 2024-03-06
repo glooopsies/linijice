@@ -1,0 +1,69 @@
+using Gtk 4.0;
+using Adw 1;
+
+Adw.ApplicationWindow window {
+  title: 'Calc';
+  width-request: 300;
+  height-request: 400;
+  default-width: 300;
+  default-height: 400;
+
+  Adw.Breakpoint {
+    condition ("max-width: 500sp")
+
+    setters {
+      split_view.collapsed: true;
+      show_toolbar.visible: true;
+    }
+  }
+
+  content: Adw.OverlaySplitView split_view {
+    sidebar: Adw.ToolbarView {
+      content: Label {
+        label: "Sidebar";
+      };
+    };
+
+    content: Adw.ToolbarView {
+      [top]
+      Adw.HeaderBar header_bar {
+        [start]
+        Button show_toolbar {
+          icon-name: "sidebar-show-symbolic";
+          visible: false;
+        }
+
+        [end]
+        MenuButton {
+          primary: true;
+          icon-name: 'open-menu-symbolic';
+          tooltip-text: _('Menu');
+          menu-model: primary_menu;
+        }
+      }
+
+      content: Label {
+        label: "Main window";
+      };
+    };
+  };
+}
+
+menu primary_menu {
+  section {
+    item {
+      label: _('_Preferences');
+      action: 'app.preferences';
+    }
+
+    item {
+      label: _('_Keyboard Shortcuts');
+      action: 'win.show-help-overlay';
+    }
+
+    item {
+      label: _('_About');
+      action: 'app.about';
+    }
+  }
+}
