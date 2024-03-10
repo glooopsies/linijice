@@ -2,7 +2,7 @@ using Gtk 4.0;
 using Adw 1;
 
 Adw.ApplicationWindow window {
-  title: 'Calc';
+  title: 'Linijice';
   width-request: 300;
   height-request: 400;
   default-width: 300;
@@ -42,9 +42,7 @@ Adw.ApplicationWindow window {
         }
       }
 
-      content: Label {
-        label: "Main window";
-      };
+      content: GLArea gl_area {};
     };
   };
 }

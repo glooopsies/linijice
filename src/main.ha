@@ -1,12 +1,19 @@
+use os;
+use rt;
+use math;
+use types::c;
+use strings;
+use fmt;
+
 use gio;
 use glib;
+use gdk4;
 use gobject;
 use gtk4;
 use adw;
-use os;
-use rt;
-use types::c;
-use strings;
+
+use libs::gl;
+use src::nodes;
 
 let split_view: nullable *adw::OverlaySplitView = null;
 
@@ -14,31 +21,48 @@ fn show_toolbar(widget: *gtk4::Button, data: *opaque) void = {
 	adw::overlay_split_view_set_show_sidebar(split_view: *adw::OverlaySplitView, glib::TRUE);
 };
 
+fn g_signal_connect(instance: *opaque, detailed_signal: *c::char, c_handler: gobject::Callback, data: nullable *opaque) void = {
+    gobject::signal_connect_data(instance, detailed_signal, c_handler, data: *opaque, null: gobject::ClosureNotify, 0u: gobject::ConnectFlags);
+};
+
+fn realize(area: *gtk4::GLArea) void = {
+	gtk4::glarea_make_current(area);
+	gl::load();
+
+	nodes::init();
+};
+
+fn unrealize(area: *gtk4::GLArea) void = {
+	nodes::finalize();
+};
+
+fn render(area: *gtk4::GLArea, context: *opaque) bool = {
+	return false;
+};
+
 fn activate(app: *gio::Application, user_data: *opaque) void = {
 	const app = app: *adw::Application;
 
-	const main_ui = strings::concat(resources, "/builder.ui");
+	const main_ui = strings::concat(resources, "/builder.ui\0");
 	defer free(main_ui);
-	
-	const main_ui = c::fromstr(main_ui);
-	defer free(main_ui);
-	
+
 	const builder = gtk4::builder_new();
-	gtk4::builder_add_from_file(builder, main_ui, null);
+	gtk4::builder_add_from_file(builder, c::nulstr(main_ui), null);
 	defer gobject::object_unref(builder);
 
-	const window = c::fromstr("window");
-	defer free(window);
-	const window = gtk4::builder_get_object(builder, window): *gtk4::Window;
+	const window = gtk4::builder_get_object(builder, c::nulstr("window\0")): *gtk4::Window;
 
-	const _split_view = c::fromstr("split_view");
-	defer free(_split_view);
-	split_view = gtk4::builder_get_object(builder, _split_view): *adw::OverlaySplitView;
-	
-	const show_toolbar_button = c::fromstr("show_toolbar");
-	defer free(show_toolbar_button);
-	const show_toolbar_button = gtk4::builder_get_object(builder, show_toolbar_button): *gtk4::Button;
+	split_view = gtk4::builder_get_object(builder, c::nulstr("split_view\0")): *adw::OverlaySplitView;
+
+	const show_toolbar_button = gtk4::builder_get_object(builder, c::nulstr("show_toolbar\0")): *gtk4::Button;
 	gtk4::button_connect_clicked(show_toolbar_button, &show_toolbar, null);
+
+	const gl_area = gtk4::builder_get_object(builder, c::nulstr("gl_area\0")): *gtk4::GLArea;
+	gtk4::glarea_set_required_version(gl_area, 3, 3);
+
+	g_signal_connect(gl_area, c::nulstr("realize\0"), &realize: gobject::Callback, null);
+	g_signal_connect(gl_area, c::nulstr("unrealize\0"), &unrealize: gobject::Callback, null);
+	g_signal_connect(gl_area, c::nulstr("render\0"), &render: gobject::Callback, null);
 
 	gtk4::window_set_application(window, app);
 	gtk4::widget_show(window);
@@ -46,17 +70,16 @@ fn activate(app: *gio::Application, user_data: *opaque) void = {
 
 export fn main() void = {
 	const app = adw::application_new(
-		c::fromstr("rs.ac.bg.matf.linijice"),
+		c::nulstr("rs.ac.bg.matf.linijice\0"),
 		gio::ApplicationFlags::FLAGS_NONE
 	): *gio::Application;
-	
+
 	gio::application_connect_activate(app, &activate, null);
 	const status = gio::application_run(
-		app, rt::argc: int, rt::argv: **c::char,
+		app, rt::argc: int, rt::argv: **c::char
 	);
-	
+
 	gobject::object_unref(app);
 
 	os::exit(status);
 };
-

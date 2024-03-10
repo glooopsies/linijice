@@ -1,11 +1,14 @@
 all: build/main
 
-build/main: src/main.ha build/resources/builder.ui build
+build/main: src/main.ha build/resources/builder.ui build/resources/shaders build
 	hare build \
-		$$(pkg-config --libs-only-l --static gtk4 libadwaita-1) \
-		-lepoxy -lXi -lxkbcommon -lwayland-client -lwayland-egl -lXfixes -lXcursor -lXdamage -lXrandr -lXinerama -lcairo-script-interpreter -lbsd \
+		$$(pkg-config --libs-only-l --static libadwaita-1 epoxy) \
 		-D "resources: str = \"build/resources\"" \
 		-o $@ src
+
+build/resources/shaders: resources/shaders
+	mkdir -p $@
+	cp -r $^ $@
 
 build/resources/builder.ui: resources/builder.blp build
 	blueprint-compiler compile  $< --output $@
@@ -18,4 +21,3 @@ run: build/main
 
 clean:
 	rm -r build
-
