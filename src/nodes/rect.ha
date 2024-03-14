@@ -58,7 +58,7 @@ fn draw_rect(this: *node) void = {
     return;
 };
 
-fn (this: *rect) void = {
+fn rect_upload(this: *rect) void = {
     const array = [
         this.position[0], this.position[1],
         this.position[0] + this.w, this.position[1] + this.h,
