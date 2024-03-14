@@ -76,6 +76,7 @@ export fn mat2fmul(f1: f32, m1: mat2) mat2 = {
 
 export fn mat2mul(m1: mat2, m2: mat2) mat2 = {
     let ret: mat2 = [[0f32...]...];
+
     for (let i = 0z; i < len(m1); i += 1) {
         for (let j = 0z; j < len(m1[0]); j += 1) {
             for (let k = 0z; k < len(m1); k += 1) {
@@ -95,8 +96,33 @@ export fn mat2mul(m1: mat2, m2: mat2) mat2 = {
     assert(mat2eq(mat2mul(m1, m2), m3), "matrices multiplication incorrect");
 };
 
+export fn mat2vec(m1: mat2, v1: vec2) mat2 = {
+    let ret: mat2 = [[0f32...]...];
+
+    for (let i = 0z; i < len(m1); i += 1) {
+        for (let j = 0z; j < len(m1[0]); j += 1) {
+            for (let k = 0z; k < len(m1); k += 1) {
+                ret[i][j] += m1[i][k] * v1[j];
+            };
+        };
+    };
+
+    return ret;
+};
+
+export fn mat2to3(m1: mat2) mat3 = {
+    return [
+        [m1[0][0], m1[0][1], 0f32],
+        [m1[1][0], m1[1][1], 0f32],
+        [0f32,     0f32,     1f32],
+    ];
+};
+
+// TODO: test mat2vec and mat2to3
+
 export fn mat2str(v1: mat2) void = {
     fmt::printfln("[{} {}]", v1[0][0], v1[0][1])!;
     fmt::printfln("[{} {}]", v1[1][0], v1[1][1])!;
     fmt::printfln("")!;
 };
+

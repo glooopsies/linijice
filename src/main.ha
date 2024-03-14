@@ -29,7 +29,7 @@ fn realize(area: *gtk4::GLArea) void = {
 	gtk4::glarea_make_current(area);
 	gl::load();
 
-	nodes::init();
+	nodes::init(resources);
 };
 
 fn unrealize(area: *gtk4::GLArea) void = {
@@ -37,6 +37,7 @@ fn unrealize(area: *gtk4::GLArea) void = {
 };
 
 fn render(area: *gtk4::GLArea, context: *opaque) bool = {
+	nodes::scene_draw();
 	return false;
 };
 

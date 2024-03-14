@@ -98,6 +98,24 @@ export fn vec2add(v1: vec2, v2: vec2) vec2 = {
     assert(vec2eq(vec2add(v1, v2), v3), "vectors addition incorrect");
 };
 
+export fn vec2translation(v1: vec2) mat3 = {
+    let mat = mat3id(1f32);
+    mat[0][2] = v1[0];
+    mat[1][2] = v1[1]; 
+
+    return mat;
+};
+
+export fn vec2scale(v1: vec2) mat3 = {
+    let mat = mat3id(1f32);
+    mat[0][0] = v1[0];
+    mat[1][1] = v1[1]; 
+
+    return mat;
+};
+
+// TODO: test vec2translation and vec2scale
+
 export fn vec2str(v1: vec2) void = {
     fmt::printfln("({}, {})", v1[0], v1[1])!;
 };

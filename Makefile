@@ -8,7 +8,7 @@ build/main: src/main.ha build/resources/builder.ui build/resources/shaders build
 
 build/resources/shaders: resources/shaders
 	mkdir -p $@
-	cp -r $^ $@
+	cp -r $^/* $@
 
 build/resources/builder.ui: resources/builder.blp build
 	blueprint-compiler compile  $< --output $@
@@ -20,4 +20,4 @@ run: build/main
 	./$<
 
 clean:
-	rm -r build
+	rm -rf build
