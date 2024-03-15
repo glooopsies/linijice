@@ -4,6 +4,7 @@ use io;
 use os;
 use errors;
 use types::c;
+use strings;
 
 export fn compile_shader(file_name: str, shader_type: gl_enum) (uint | errors::invalid) = {
     let success: i32 = 0;
@@ -13,6 +14,10 @@ export fn compile_shader(file_name: str, shader_type: gl_enum) (uint | errors::i
 
 	const shader_src = io::drain(file)!;
 	defer free(shader_src);
+
+    const shader_src = strings::fromutf8(shader_src)!;
+    const shader_src = c::fromstr(shader_src);
+    defer free(shader_src);
 
     const shader = glCreateShader(shader_type);
     glShaderSource(shader, 1, &shader_src: *nullable *const i8, null);
