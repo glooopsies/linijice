@@ -106,6 +106,13 @@ export fn vec2translation(v1: vec2) mat3 = {
     return mat;
 };
 
+@test fn vec2translation() void = {
+    const v1: vec2 = [1f32, 2f32];
+    const m1: mat3 = [[1f32, 0f32, 1f32], [0f32, 1f32, 2f32], [0f32, 0f32, 1f32]];
+
+    assert(mat3eq(vec2translation(v1), m1), "translation matrix incorrect");
+};
+
 export fn vec2scale(v1: vec2) mat3 = {
     let mat = mat3id(1f32);
     mat[0][0] = v1[0];
@@ -114,8 +121,13 @@ export fn vec2scale(v1: vec2) mat3 = {
     return mat;
 };
 
-// TODO: test vec2translation and vec2scale
+@test fn vec2scale() void = {
+    const v1: vec2 = [1f32, 2f32];
+    const m1: mat3 = [[1f32, 0f32, 0f32], [0f32, 2f32, 0f32], [0f32, 0f32, 1f32]];
 
-export fn vec2str(v1: vec2) void = {
+    assert(mat3eq(vec2scale(v1), m1), "scale matrix incorrect");
+};
+
+export fn vec2print(v1: vec2) void = {
     fmt::printfln("({}, {})", v1[0], v1[1])!;
 };

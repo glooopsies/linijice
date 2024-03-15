@@ -99,7 +99,7 @@ export fn mat3mul(m1: mat3, m2: mat3) mat3 = {
     assert(mat3eq(mat3mul(m1, m2), m3), "matrices multiplication incorrect");
 };
 
-export fn mat3str(v1: mat3) void = {
+export fn mat3print(v1: mat3) void = {
     fmt::printfln("[{} {} {}]", v1[0][0], v1[0][1], v1[0][2])!;
     fmt::printfln("[{} {} {}]", v1[1][0], v1[1][1], v1[1][2])!;
     fmt::printfln("[{} {} {}]", v1[2][0], v1[2][1], v1[2][2])!;

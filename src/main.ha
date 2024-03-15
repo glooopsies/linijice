@@ -14,6 +14,7 @@ use adw;
 
 use libs::gl;
 use src::nodes;
+use src::window;
 
 let split_view: nullable *adw::OverlaySplitView = null;
 
@@ -41,6 +42,11 @@ fn render(area: *gtk4::GLArea, context: *opaque) bool = {
 	return false;
 };
 
+fn gl_resize(widget: *gtk4::GLArea, w: int, h: int, data: *opaque) void = {
+	window::width = w;
+	window::height = h;
+};
+
 fn activate(app: *gio::Application, user_data: *opaque) void = {
 	const app = app: *adw::Application;
 
@@ -64,6 +70,7 @@ fn activate(app: *gio::Application, user_data: *opaque) void = {
 	g_signal_connect(gl_area, c::nulstr("realize\0"), &realize: gobject::Callback, null);
 	g_signal_connect(gl_area, c::nulstr("unrealize\0"), &unrealize: gobject::Callback, null);
 	g_signal_connect(gl_area, c::nulstr("render\0"), &render: gobject::Callback, null);
+	g_signal_connect(gl_area, c::nulstr("resize\0"), &gl_resize: gobject::Callback, null);
 
 	gtk4::window_set_application(window, app);
 	gtk4::widget_show(window);

@@ -98,6 +98,6 @@ export fn vec3add(v1: vec3, v2: vec3) vec3 = {
     assert(vec3eq(vec3add(v1, v2), v3), "vectors addition incorrect");
 };
 
-export fn vec3str(v1: vec3) void = {
+export fn vec3print(v1: vec3) void = {
     fmt::printfln("({}, {}, {})", v1[0], v1[1], v1[2])!;
 };

@@ -96,18 +96,23 @@ export fn mat2mul(m1: mat2, m2: mat2) mat2 = {
     assert(mat2eq(mat2mul(m1, m2), m3), "matrices multiplication incorrect");
 };
 
-export fn mat2vec(m1: mat2, v1: vec2) mat2 = {
-    let ret: mat2 = [[0f32...]...];
-
+export fn mat2vec(v1: vec2, m1: mat2) vec2 = {
+    let ret: vec2 = [0f32...];
     for (let i = 0z; i < len(m1); i += 1) {
         for (let j = 0z; j < len(m1[0]); j += 1) {
-            for (let k = 0z; k < len(m1); k += 1) {
-                ret[i][j] += m1[i][k] * v1[j];
-            };
+            ret[i] += m1[i][j] * v1[j];
         };
     };
 
     return ret;
+};
+
+@test fn mat2vec() void = {
+    const m1: mat2 = [[2f32, 1f32],  [3f32, 2f32]];
+    const v1: vec2 = [1f32, 2f32];
+    const v2: vec2 = [4f32, 7f32];
+
+    assert(vec2eq(mat2vec(v1, m1), v2), "matrix vector multiplication incorrect");
 };
 
 export fn mat2to3(m1: mat2) mat3 = {
@@ -118,9 +123,14 @@ export fn mat2to3(m1: mat2) mat3 = {
     ];
 };
 
-// TODO: test mat2vec and mat2to3
+@test fn mat2vec() void = {
+    const m1: mat2 = [[2f32, 1f32],  [3f32, 2f32]];
+    const m2: mat3 = [[2f32, 1f32, 0f32],  [3f32, 2f32, 0f32], [0f32, 0f32, 1f32]];
 
-export fn mat2str(v1: mat2) void = {
+    assert(mat3eq(mat2to3(m1), m2), "matrix cast to 3 deimension incorrect");
+};
+
+export fn mat2print(v1: mat2) void = {
     fmt::printfln("[{} {}]", v1[0][0], v1[0][1])!;
     fmt::printfln("[{} {}]", v1[1][0], v1[1][1])!;
     fmt::printfln("")!;

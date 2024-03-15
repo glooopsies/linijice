@@ -28,13 +28,18 @@ export fn new_scene() void = {
         draw        = &_scene_draw,
 
         layers = alloc([
-            alloc([make_rect([-0.5f32, -0.5f32], 1f32, 1f32)])
+            alloc([make_ellipse([-0.5f32, 0.2f32], 1f32, 0.7f32)]),
+            alloc([make_rect([-0.5f32, -0.5f32], 1f32, 0.5f32)])
         ]),
     });
 };
 
 fn _scene_draw(this: *node) void = {
     const this = this: *scene;
+
+    gl::glDisable(gl::GL_DEPTH_TEST);
+    gl::glEnable(gl::GL_BLEND);
+    gl::glBlendFunc(gl::GL_SRC_ALPHA, gl::GL_ONE_MINUS_SRC_ALPHA);
 
 	gl::glClearColor(background[0], background[1], background[2], 1.0);
 	gl::glClear(gl::GL_COLOR_BUFFER_BIT | gl::GL_DEPTH_BUFFER_BIT);
