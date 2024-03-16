@@ -1,0 +1,9 @@
+--- a/configs/linux.mk
++++ b/configs/linux.mk
+@@ -1,5 +1,5 @@
+ # install locations
+-PREFIX = /usr/local
++PREFIX = /app
+ BINDIR = $(PREFIX)/bin
+ MANDIR = $(PREFIX)/share/man
+ SRCDIR = $(PREFIX)/src

@@ -1,22 +1,32 @@
 all: build/main
 
-build/main: src/main.ha build/resources/builder.ui build/resources/shaders build
+PREFIX = build
+BINDIR = $(PREFIX)/bin
+RESDIR = $(PREFIX)/resources
+BINOUT = build
+RESOUT = build/resources
+
+$(BINOUT)/main: src/main.ha $(RESOUT)/builder.ui $(RESOUT)/shaders build
 	hare build \
 		$$(pkg-config --libs-only-l --static libadwaita-1 epoxy) \
-		-D "resources: str = \"build/resources\"" \
+		-D "resources: str = \"$(RESDIR)\"" \
 		-o $@ src
 
-build/resources/shaders: resources/shaders
+$(RESOUT)/shaders: resources/shaders
 	mkdir -p $@
 	cp -r $^/* $@
 
-build/resources/builder.ui: resources/builder.blp build
+$(RESOUT)/builder.ui: resources/builder.blp $(RESOUT)
 	blueprint-compiler compile  $< --output $@
 
-build:
+$(RESOUT):
 	mkdir -p build/resources
 
-run: build/main
+install: $(BINOUT)/main
+	install -m755 $< "$(BINDIR)"
+	cp -r "$(RESOUT)" "$(RESDIR)"
+
+run: $(BINOUT)/main
 	./$<
 
 clean:

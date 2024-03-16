@@ -1,0 +1,39 @@
+--- a/Makefile
++++ b/Makefile
+@@ -4,7 +4,7 @@
+ BINDINGS_DIR = bindings
+ CORE_MODULES = glib gobject gio gmodule atk gdkpixbuf freetype harfbuzz cairo pango xlib types/libc
+ MODULES3 = $(CORE_MODULES) gdk gtk
+-MODULES4 = $(CORE_MODULES) gdk4 gtk4 pangocairo graphene gsk
++MODULES4 = $(CORE_MODULES) gdk4 gtk4 pangocairo graphene gsk adw
+ 
+ DESTDIR =
+ PREFIX = /usr/local
+diff --git a/generate4 b/generate4
+index 23061f0..1d1f6f9 100755
+--- a/generate4
++++ b/generate4
+@@ -5,7 +5,7 @@ BIND=./bindings
+ mkdir -p "$BIND"/glib "$BIND"/gobject "$BIND"/gio "$BIND"/gmodule "$BIND"/atk \
+ 	"$BIND"/gdkpixbuf "$BIND"/freetype "$BIND"/harfbuzz "$BIND"/cairo \
+ 	"$BIND"/pango "$BIND"/pangocairo "$BIND"/gdk4 "$BIND"/xlib "$BIND"/graphene \
+-	"$BIND"/gsk "$BIND"/gtk4
++	"$BIND"/gsk "$BIND"/gtk4 "$BIND"/adw
+ 
+ hare build cmd/hare-gi && ./hare-gi -B \
+ 	-m GLib,glib,"$BIND"/glib/_generated.ha \
+@@ -24,6 +24,7 @@ hare build cmd/hare-gi && ./hare-gi -B \
+ 	-m Graphene,graphene,"$BIND"/graphene/_generated.ha \
+ 	-m Gsk,gsk,"$BIND"/gsk/_generated.ha \
+ 	-m Gtk,gtk4,"$BIND"/gtk4/_generated.ha \
++	-m Adw,adw,"$BIND"/adw/_generated.ha \
+ 	/usr/share/gir-1.0/GLib-2.0.gir \
+ 	/usr/share/gir-1.0/GObject-2.0.gir \
+ 	/usr/share/gir-1.0/Gio-2.0.gir \
+@@ -39,4 +40,5 @@ hare build cmd/hare-gi && ./hare-gi -B \
+ 	/usr/share/gir-1.0/xlib-2.0.gir \
+ 	/usr/share/gir-1.0/Graphene-1.0.gir \
+ 	/usr/share/gir-1.0/Gsk-4.0.gir \
+-	/usr/share/gir-1.0/Gtk-4.0.gir
++	/usr/share/gir-1.0/Gtk-4.0.gir \
++	/usr/share/gir-1.0/Adw-1.gir

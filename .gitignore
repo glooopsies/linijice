@@ -2,3 +2,4 @@
 .code
 
 build/
+.flatpak-builder/

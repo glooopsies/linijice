@@ -1,0 +1,145 @@
+{
+  "id": "rs.ac.bg.matf.linijice",
+  "runtime": "org.gnome.Platform",
+  "runtime-version": "45",
+  "sdk": "org.gnome.Sdk",
+  "command": "main",
+  "finish-args": [
+    "--share=ipc",
+    "--socket=wayland",
+    "--socket=fallback-x11",
+    "--socket=x11",
+    "--socket=pulseaudio",
+    "--device=dri"
+  ],
+  "modules": [
+    {
+      "name": "blueprint-compiler",
+      "buildsystem": "meson",
+      "sources": [
+        {
+          "type": "git",
+          "url": "https://gitlab.gnome.org/jwestman/blueprint-compiler.git",
+          "tag": "v0.10.0"
+        }
+      ]
+    },
+    {
+      "name": "qbe",
+      "buildsystem": "simple",
+      "build-commands": [
+        "make install DESTDIR=/app BINDIR=/bin"
+      ],
+      "sources": [
+        {
+          "type": "git",
+          "url": "git://c9x.me/qbe.git",
+          "tag": "v1.2"
+        }
+      ]
+    },
+    {
+      "name": "harec",
+      "buildsystem": "simple",
+      "build-commands": [
+        "cp configs/linux.mk config.mk",
+        "make BINOUT=/app/bin"
+      ],
+      "sources": [
+        {
+          "type": "git",
+          "url": "https://git.sr.ht/~sircmpwn/harec",
+          "tag": "0.24.0"
+        }
+      ]
+    },
+    {
+      "name": "scdoc",
+      "buildsystem": "simple",
+      "build-commands": [
+        "make install PREFIX=/app"
+      ],
+      "sources": [
+        {
+          "type": "git",
+          "url": "https://git.sr.ht/~sircmpwn/scdoc",
+          "tag": "1.11.3"
+        }
+      ]
+    },
+    {
+      "name": "hare",
+      "buildsystem": "simple",
+      "build-commands": [
+        "cp configs/linux.mk config.mk",
+        "make",
+        "make install"
+      ],
+      "sources": [
+        {
+          "type": "git",
+          "url": "https://git.sr.ht/~sircmpwn/hare",
+          "tag": "0.24.0"
+        },
+        {
+          "type": "patch",
+          "path": "aux/001-hare-set-flatpak-install-dir.patch"
+        }
+      ]
+    },
+    {
+      "name": "hare-gi",
+      "buildsystem": "simple",
+      "build-commands": [
+        "./generate4",
+        "sed -i '/#/d' bindings/harfbuzz/_generated.ha",
+        "make",
+        "make install4 PREFIX=/app"
+      ],
+      "sources": [
+        {
+          "type": "git",
+          "url": "https://git.sr.ht/~yerinalexey/hare-gi",
+          "branch": "master"
+        
+        },
+        {
+          "type": "patch",
+          "path": "aux/001-hare-gi-add-libadwaita.patch"
+        }
+      ]
+    },
+    {
+      "name": "linijice",
+      "buildsystem": "simple",
+      "build-commands": [
+        "make install"
+      ],
+      "sources": [
+        {
+          "type": "file",
+          "path": "Makefile"
+        },
+        {
+          "type": "dir",
+          "path": "src",
+          "dest": "src"
+        },
+        {
+          "type": "dir",
+          "path": "libs",
+          "dest": "libs"
+        },
+        {
+          "type": "dir",
+          "path": "resources",
+          "dest": "resources"
+        },
+        {
+          "type": "patch",
+          "path": "aux/001-app-set-flatpak-install-dir.patch"
+        }
+      ]
+    }
+  ]
+}
