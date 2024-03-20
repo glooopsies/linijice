@@ -1,0 +1,20 @@
+Implementation of the base64 encoding scheme as defined by RFC 4648.
+
+A stream-based encoding and decoding interface is available via [[newencoder]]
+and [[newdecoder]], which transparently encode or decode bytes to or from base64
+when writing to or reading from an underlying I/O handle.
+
+Convenience functions for encoding to or decoding from a byte slice or a string
+are also available; see [[encodeslice]], [[decodeslice]], [[encodestr]], and
+[[decodestr]]. These functions dynamically allocate their return values; use the
+stream interface if you require static allocation.
+
+Each function accepts the desired base64 encoding alphabet as its first
+argument. [[std_encoding]] and [[url_encoding]], as defined by the RFC, are
+provided for your convenience, but you may create your own encoding using
+[[encoding_init]].
+
+Due to security concerns described by the RFC, this implementation rejects
+invalid padding.
+
+https://datatracker.ietf.org/doc/html/rfc4648#section-12

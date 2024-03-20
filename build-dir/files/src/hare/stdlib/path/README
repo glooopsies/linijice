@@ -1,0 +1,37 @@
+The path module provides utilities for working with filesystem paths.
+
+Note that Hare expects paths to be valid UTF-8 strings. If you require the use
+of non-UTF-8 paths (ideally for only as long as it takes to delete or rename
+those files), see the low-level functions available from [[rt::]].
+
+Use of the [[buffer]] type is recommended for efficient and consistent
+manipulation of filesystem paths. The path will always be
+normalized, which is to say that it will not include any of the following:
+
+- Redundant ".." components
+- Redundant path separators
+- Any "." components, except in the case of "."
+
+Assuming that [[SEP]] is '/', "/usr//bin/../bin/./hare/" becomes "/usr/bin/hare"
+and "../../foo/bar" is unchanged.
+
+Different [[fs::fs]] implementations may have different rules for normalizing
+paths. For use-cases in which this is relevant, [[fs::resolve]] should be used
+instead.
+
+The buffer object includes an array of length [[MAX]], which can be somewhat
+large; on Linux it's 4095 bytes. You can allocate this on the stack in most
+cases, but you may prefer to allocate it elsewhere depending on your needs.
+Functions in this module return [[too_long]] if the buffer's capacity would be
+exceeded.
+
+	// Stack allocated
+	let buf = path::init()!;
+
+	// Statically allocated
+	static let buf = path::buffer { ... };
+	path::set(&buf)!;
+
+	// Heap allocated
+	let buf = alloc(path::init()!);
+	defer free(buf);

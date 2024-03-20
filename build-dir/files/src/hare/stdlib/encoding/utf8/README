@@ -1,0 +1,2 @@
+encoding::utf8 provides helper functions for working with runes, strings, and
+UTF-8-encoded slices.

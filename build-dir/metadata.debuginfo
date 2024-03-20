@@ -1,0 +1,5 @@
+[Runtime]
+name=rs.ac.bg.matf.linijice.Debug
+
+[ExtensionOf]
+ref=app/rs.ac.bg.matf.linijice/x86_64/master

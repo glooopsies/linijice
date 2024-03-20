@@ -1,0 +1,2 @@
+The hare namespace provides various modules which can be used to work with Hare
+code itself (how meta). The modules available are:

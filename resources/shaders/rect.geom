@@ -21,3 +21,6 @@ void main() {
 
     EndPrimitive();
 }
+
+// flatpak-builder --user --install --force-clean build-dir rs.ac.bg.matf.linijice.json
+// flatpak run rs.ac.bg.matf.linijice.json

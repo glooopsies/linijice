@@ -1,0 +1,35 @@
+types::c provides type aliases that are compatible with standard C builtin types
+and typedefs, as specified ISO/IEC 9899 and POSIX, as well as convenience
+functions for working with C types. This module is useful for C interop, for
+instance if an external function returns a [[long]] or a [[ssize]], or if you
+need to convert between a C string and a Hare string. The types provided here
+shouldn't be used for most Hare code.
+
+Some C types aren't provided by this module, since they are provided by the Hare
+language itself:
+
+- _Bool, bool  -> bool
+- nullptr_t    -> null
+- (signed) int -> int
+- size_t       -> size
+- unsigned int -> uint
+- uintptr_t    -> uintptr
+- va_list      -> valist
+
+Some C types are mostly compatible with Hare types, with minor differences:
+
+- C's void is an incomplete opaque type, which is also used to indicate the
+  absence of a value. Hare provides void as a zero-size type, and opaque as an
+  undefined-size opaque type.
+- Hare doesn't have builtin imaginary or complex types, though complex types
+  with equivalent represention to their C counterparts are declared in
+  [[math::complex::]]. Hare doesn't allow casting between real and complex types
+  like C does.
+
+Hare doesn't support bit-precise integer types (_BitInt) or decimal floating
+point types (_Decimal32, _Decimal64, _Decimal128). Hare also doesn't provide any
+floating point type larger than 8 bytes, implicating `long double` on some
+platforms.
+
+Additional low-level or implementation-specific types may be defined in
+[[rt::]].

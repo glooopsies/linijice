@@ -1,0 +1,14 @@
+bufio provides an [[io::stream]] implementation which provides buffered I/O
+support, utility functions which pair well with buffered streams, and a
+[[scanner]] type which allocates and maintains its own read buffer.
+
+A buffered [[stream]] is used to batch read and write operations against an
+underlying [[io::handle]]. bufio provides several utilities for reading from
+handles, namely [[read_tok]] et al. These functions require small, frequent
+reads, or take advantage of look-ahead, and thus are most efficient when paired
+with a buffered [[stream]].
+
+bufio also provides a "scanning" interface, with functions like [[scan_string]]
+which take in a [[scanner]]. Strings returned from scanning functions are
+borrowed from the scanner's read buffer, so allocated memory can be reused for
+future scans.

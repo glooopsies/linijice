@@ -1,0 +1,17 @@
+The keystore module provides a means of securely storing private information,
+ideally through the assistance of operating system key storage facilities. The
+purpose of this feature is to store private data without keeping it in the
+process's address space, so that bugs which can lead to reading process memory
+cannot recover the key while it's not actively in use.
+
+On platforms without a suitable feature, a fallback implementation stores the
+secrets in the process heap, providing no security. This is an opportunistic API
+which allows your program to take advantage of these features if available.
+
+This is a low-level module which implements cryptographic primitives. Direct use
+of cryptographic primitives is not recommended for non-experts, as incorrect use
+of these primitives can easily lead to the introduction of security
+vulnerabilities. Non-experts are advised to use the high-level operations
+available in the top-level [[crypto::]] module.
+
+Be advised that Hare's cryptography implementations have not been audited.
