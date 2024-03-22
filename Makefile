@@ -29,5 +29,11 @@ install: $(BINOUT)/main
 run: $(BINOUT)/main
 	./$<
 
+flatpak:
+	flatpak-builder --user --install --force-clean build-dir rs.ac.bg.matf.linijice.json
+
+flatpak-run: flatpak
+	flatpak run rs.ac.bg.matf.linijice
+
 clean:
 	rm -rf build
