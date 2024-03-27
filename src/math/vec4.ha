@@ -1,0 +1,1 @@
+export type vec4 = [4]f32;

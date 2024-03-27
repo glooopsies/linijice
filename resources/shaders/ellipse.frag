@@ -1,6 +1,7 @@
 #version 430 core
 
 layout (location = 0) in vec2 screen_positions[];
+layout (location = 2) in vec4 color;
 
 out vec4 FragColor;
 
@@ -10,5 +11,6 @@ void main() {
 
     vec2 pos = gl_FragCoord.xy;
     float opacity = step((pos.x - c.x)*(pos.x - c.x) * r.y*r.y + (pos.y - c.y)*(pos.y - c.y) * r.x*r.x, r.x*r.x*r.y*r.y); 
-    FragColor = vec4(0.0, 1.0, 0.0, opacity);
+    
+    FragColor = color * opacity;
 }

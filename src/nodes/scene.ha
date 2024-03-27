@@ -11,6 +11,7 @@ export type scene = struct {
     node,
     w: f32,
     h: f32,
+    paper: *node,
     layers: []layer,
 };
 
@@ -21,18 +22,21 @@ let active_scene: nullable *scene = null;
 export fn new_scene() void = {
     scene_free();
 
+    const width = 500f32;
+    const height = 500f32;
+
     active_scene = alloc(scene {
         position    = math::vec2id(0f32),
         translation = math::vec2id(0f32),
         rotation    = math::mat2id(1f32),
         scale       = math::vec2id(1f32),
-        w           = 500f32,
-        h           = 500f32,
+        w           = width,
+        h           = height,
         draw        = &_scene_draw,
 
+        paper = make_rect([0f32, 0f32], width, height, [1f32, 1f32, 1f32, 1f32]),
         layers = alloc([
-            alloc([make_rect([100f32, 100f32], 200f32, 100f32)]),
-            alloc([make_ellipse([0f32, 0f32], 200f32, 200f32)]),
+            alloc([make_ellipse([400f32, 100f32], 200f32, 100f32, [0f32, 0.6f32, 0.6f32, 0.5f32])])
         ]), 
     });
 };
@@ -118,7 +122,6 @@ fn scene_init(resources: str) void = {
 };
 
 fn scene_transform() math::mat3 = {
-    //return math::vec2scale([1f32/(window::width: f32), 1f32/(window::height: f32)]);
     return math::mat3mul(
         math::vec2translation([-1f32, 1f32]),
         math::vec2scale([2f32/(window::width: f32), -2f32/(window::height: f32)])
@@ -128,14 +131,14 @@ fn scene_transform() math::mat3 = {
 fn _scene_draw(this: *node) void = {
     const this = this: *scene;
 
-	gl::glClearColor(background[0], background[1], background[2], 1.0);
-	gl::glClear(gl::GL_COLOR_BUFFER_BIT | gl::GL_DEPTH_BUFFER_BIT);
+	// gl::glClearColor(background[0], background[1], background[2], 1.0);
+	// gl::glClear(gl::GL_COLOR_BUFFER_BIT | gl::GL_DEPTH_BUFFER_BIT);
 
-    let draw_fb = 0i32, read_fb = 0i32;
-    gl::glGetIntegerv(gl::GL_DRAW_FRAMEBUFFER_BINDING, &draw_fb);
-    gl::glGetIntegerv(gl::GL_READ_FRAMEBUFFER_BINDING, &read_fb);
+    // let draw_fb = 0i32, read_fb = 0i32;
+    // gl::glGetIntegerv(gl::GL_DRAW_FRAMEBUFFER_BINDING, &draw_fb);
+    // gl::glGetIntegerv(gl::GL_READ_FRAMEBUFFER_BINDING, &read_fb);
 
-    gl::glBindFramebuffer(gl::GL_FRAMEBUFFER, framebuffer);
+    // gl::glBindFramebuffer(gl::GL_FRAMEBUFFER, framebuffer);
     gl::glClearColor(0.1f32, 0.1f32, 0.1f32, 1.0f32);
     gl::glClear(gl::GL_COLOR_BUFFER_BIT | gl::GL_DEPTH_BUFFER_BIT);
     gl::glEnable(gl::GL_DEPTH_TEST);
@@ -143,27 +146,28 @@ fn _scene_draw(this: *node) void = {
     gl::glEnable(gl::GL_BLEND);
     gl::glBlendFunc(gl::GL_SRC_ALPHA, gl::GL_ONE_MINUS_SRC_ALPHA);
     
+    this.paper.draw(this.paper);
     for (let i = 0z; i < len(this.layers); i += 1) {
         for (let j = 0z; j < len(this.layers[i]); j += 1) {
             this.layers[i][j].draw(this.layers[i][j]);
         };
     };
 
-    gl::glBindFramebuffer(gl::GL_READ_FRAMEBUFFER, framebuffer);
-    gl::glBindFramebuffer(gl::GL_DRAW_FRAMEBUFFER, intermediateFBO);
-    gl::glBlitFramebuffer(0, 0, window::width, window::height, 0, 0, window::width, window::height, gl::GL_COLOR_BUFFER_BIT, gl::GL_NEAREST);
+    // gl::glBindFramebuffer(gl::GL_READ_FRAMEBUFFER, framebuffer);
+    // gl::glBindFramebuffer(gl::GL_DRAW_FRAMEBUFFER, intermediateFBO);
+    // gl::glBlitFramebuffer(0, 0, window::width, window::height, 0, 0, window::width, window::height, gl::GL_COLOR_BUFFER_BIT, gl::GL_NEAREST);
 
-    gl::glBindFramebuffer(gl::GL_DRAW_FRAMEBUFFER, draw_fb: uint);
-    gl::glBindFramebuffer(gl::GL_READ_FRAMEBUFFER, read_fb: uint);
-    gl::glClearColor(1.0f32, 1.0f32, 1.0f32, 1.0f32);
-    gl::glClear(gl::GL_COLOR_BUFFER_BIT);
-    gl::glDisable(gl::GL_DEPTH_TEST);
+    // gl::glBindFramebuffer(gl::GL_DRAW_FRAMEBUFFER, draw_fb: uint);
+    // gl::glBindFramebuffer(gl::GL_READ_FRAMEBUFFER, read_fb: uint);
+    // gl::glClearColor(1.0f32, 1.0f32, 1.0f32, 1.0f32);
+    // gl::glClear(gl::GL_COLOR_BUFFER_BIT);
+    // gl::glDisable(gl::GL_DEPTH_TEST);
 
-    gl::glUseProgram(msaa_program);
-    gl::glBindVertexArray(quadVAO);
-    gl::glActiveTexture(gl::GL_TEXTURE0);
-    gl::glBindTexture(gl::GL_TEXTURE_2D, screenTexture);
-    gl::glDrawArrays(gl::GL_TRIANGLES, 0, 6);
+    // gl::glUseProgram(msaa_program);
+    // gl::glBindVertexArray(quadVAO);
+    // gl::glActiveTexture(gl::GL_TEXTURE0);
+    // gl::glBindTexture(gl::GL_TEXTURE_2D, screenTexture);
+    // gl::glDrawArrays(gl::GL_TRIANGLES, 0, 6);
 };
 
 export fn scene_draw() void = {

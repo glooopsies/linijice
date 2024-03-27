@@ -50,7 +50,7 @@ export fn compile_program(shaders: []uint) (uint | errors::invalid) = {
 
     if (success == 0) {
         let length: i32 = 0;
-        glGetShaderiv(program, GL_INFO_LOG_LENGTH, &length: nullable *i32);
+        glGetProgramiv(program, GL_INFO_LOG_LENGTH, &length: nullable *i32);
 
         let info: [1000]c::char = [0...];
         glGetProgramInfoLog(program, length, null, &info[0]);

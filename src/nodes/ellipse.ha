@@ -9,19 +9,21 @@ use libs::gl;
 
 export type ellipse = struct {
     node,
+    color: math::vec4,
     r1: f32,
     r2: f32,
 };
 
 let ellipse_program = 0u;
 
-export fn make_ellipse(position: math::vec2, r1: f32, r2: f32) *ellipse = {
+export fn make_ellipse(position: math::vec2, r1: f32, r2: f32, color: math::vec4) *ellipse = {
     return alloc(ellipse {
         position    = position,
         translation = math::vec2id(0f32),
         rotation    = math::mat2id(1f32),
         scale       = math::vec2id(1f32),
 
+        color = color,
         r1 = r1,
         r2 = r2,
         draw = &draw_ellipse,
@@ -69,8 +71,11 @@ fn draw_ellipse(this: *node) void = {
 
 fn ellipse_upload(this: *ellipse) void = {
     const array = [
-        this.position[0], this.position[1],
-        this.position[0] + this.r1, this.position[1] + this.r2,
+        this.position[0], this.position[1], 
+        this.color[0], this.color[1], this.color[2], this.color[3],
+
+        this.position[0] + this.r1, this.position[1] + this.r2, 
+        this.color[0], this.color[1], this.color[2], this.color[3],
     ];
 
     gl::glBindVertexArray(ellipse_VAO);
@@ -78,9 +83,12 @@ fn ellipse_upload(this: *ellipse) void = {
     gl::glBindBuffer(gl::GL_ARRAY_BUFFER, ellipse_VBO);
     gl::glBufferData(gl::GL_ARRAY_BUFFER, len(array) * size(f32): uintptr, &array[0], gl::GL_STATIC_DRAW);
 
-    gl::glVertexAttribPointer(0, 2, gl::GL_FLOAT, gl::GL_FALSE, 2 * size(f32): i32, 0: uintptr : *opaque);
+    gl::glVertexAttribPointer(0, 2, gl::GL_FLOAT, gl::GL_FALSE, 6 * size(f32): i32, 0: uintptr : *opaque);
     gl::glEnableVertexAttribArray(0);
-    
+
+    gl::glVertexAttribPointer(1, 4, gl::GL_FLOAT, gl::GL_FALSE, 6 * size(f32): i32, (2 * size(f32)): uintptr : *opaque);
+    gl::glEnableVertexAttribArray(1);
+
     gl::glBindBuffer(gl::GL_ARRAY_BUFFER, 0);
     gl::glBindVertexArray(0);
 };

@@ -9,19 +9,21 @@ use libs::gl;
 
 export type rect = struct {
     node,
+    color: math::vec4,
     w: f32,
     h: f32,
 };
 
 let rect_program = 0u;
 
-export fn make_rect(position: math::vec2, w: f32, h: f32) *rect = {
+export fn make_rect(position: math::vec2, w: f32, h: f32, color: math::vec4) *rect = {
     return alloc(rect {
         position    = position,
         translation = math::vec2id(0f32),
         rotation    = math::mat2id(1f32),
         scale       = math::vec2id(1f32),
 
+        color = color,
         w = w,
         h = h,
         draw = &draw_rect,
@@ -68,8 +70,11 @@ fn draw_rect(this: *node) void = {
 
 fn rect_upload(this: *rect) void = {
     const array = [
-        this.position[0], this.position[1],
-        this.position[0] + this.w, this.position[1] + this.h,
+        this.position[0], this.position[1], 
+        this.color[0], this.color[1], this.color[2], this.color[3],
+
+        this.position[0] + this.w, this.position[1] + this.h, 
+        this.color[0], this.color[1], this.color[2], this.color[3],
     ];
 
     gl::glBindVertexArray(rect_VAO);
@@ -77,8 +82,11 @@ fn rect_upload(this: *rect) void = {
     gl::glBindBuffer(gl::GL_ARRAY_BUFFER, rect_VBO);
     gl::glBufferData(gl::GL_ARRAY_BUFFER, len(array) * size(f32): uintptr, &array[0], gl::GL_STATIC_DRAW);
 
-    gl::glVertexAttribPointer(0, 2, gl::GL_FLOAT, gl::GL_FALSE, 2 * size(f32): i32, 0: uintptr : *opaque);
+    gl::glVertexAttribPointer(0, 2, gl::GL_FLOAT, gl::GL_FALSE, 6 * size(f32): i32, 0: uintptr : *opaque);
     gl::glEnableVertexAttribArray(0);
+
+    gl::glVertexAttribPointer(1, 4, gl::GL_FLOAT, gl::GL_FALSE, 6 * size(f32): i32, (2 * size(f32)): uintptr : *opaque);
+    gl::glEnableVertexAttribArray(1);
 
     gl::glBindBuffer(gl::GL_ARRAY_BUFFER, 0);
     gl::glBindVertexArray(0);
