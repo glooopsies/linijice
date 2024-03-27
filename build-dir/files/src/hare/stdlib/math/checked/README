@@ -1,2 +1,0 @@
-math::checked provides safe integer arithmetic functions that check for
-overflow.

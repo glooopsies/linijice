@@ -36,6 +36,7 @@ export fn new_scene() void = {
 };
 
 fn scene_transform() math::mat3 = {
+    //return math::vec2scale([1f32/(window::width: f32), 1f32/(window::height: f32)]);
     return math::mat3mul(
         math::vec2translation([-1f32, 1f32]),
         math::vec2scale([2f32/(window::width: f32), -2f32/(window::height: f32)])

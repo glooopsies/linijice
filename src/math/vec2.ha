@@ -100,15 +100,15 @@ export fn vec2add(v1: vec2, v2: vec2) vec2 = {
 
 export fn vec2translation(v1: vec2) mat3 = {
     let mat = mat3id(1f32);
-    mat[0][2] = v1[0];
-    mat[1][2] = v1[1]; 
+    mat[2][0] = v1[0];
+    mat[2][1] = v1[1]; 
 
     return mat;
 };
 
 @test fn vec2translation() void = {
     const v1: vec2 = [1f32, 2f32];
-    const m1: mat3 = [[1f32, 0f32, 1f32], [0f32, 1f32, 2f32], [0f32, 0f32, 1f32]];
+    const m1: mat3 = [[1f32, 0f32, 0f32], [0f32, 1f32, 0f32], [1f32, 2f32, 1f32]];
 
     assert(mat3eq(vec2translation(v1), m1), "translation matrix incorrect");
 };

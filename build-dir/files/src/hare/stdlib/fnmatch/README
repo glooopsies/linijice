@@ -1,4 +1,0 @@
-The fnmatch module provides an implementation of fnmatch string matching as
-defined by POSIX.
-
-https://pubs.opengroup.org/onlinepubs/9699919799/functions/fnmatch.html

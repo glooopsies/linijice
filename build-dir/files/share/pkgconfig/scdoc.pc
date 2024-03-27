@@ -1,7 +1,0 @@
-prefix=/app
-exec_prefix=${prefix}
-scdoc=${exec_prefix}/bin/scdoc
-
-Name: scdoc
-Description: Man page generator
-Version: 1.11.3

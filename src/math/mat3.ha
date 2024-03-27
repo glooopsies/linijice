@@ -62,7 +62,7 @@ export fn mat3fmul(f1: f32, m1: mat3) mat3 = {
     let ret: mat3 = [[0f32...]...];
     for (let i = 0z; i < 3; i += 1) {
         for (let j = 0z; j < 3; j += 1) {
-            ret[i][j] = f1 * m1[i][j];
+            ret[j][i] = f1 * m1[j][i];
         };
     };
 
@@ -83,7 +83,7 @@ export fn mat3mul(m1: mat3, m2: mat3) mat3 = {
     for (let i = 0z; i < len(m1); i += 1) {
         for (let j = 0z; j < len(m1[0]); j += 1) {
             for (let k = 0z; k < len(m1); k += 1) {
-                ret[i][j] += m1[i][k] * m2[k][j];
+                ret[j][i] += m1[k][i] * m2[j][k];
             };
         };
     };
@@ -103,24 +103,24 @@ export fn mat3vec(m1: mat3, v1: vec3) vec3 = {
     let ret: vec3 = [0f32...];
     for (let i = 0z; i < len(m1); i += 1) {
         for (let j = 0z; j < len(m1[0]); j += 1) {
-            ret[i] += m1[i][j] * v1[j];
+            ret[i] += m1[j][i] * v1[j];
         };
     };
 
     return ret;
 };
 
-// @test fn mat2vec() void = {
-//     const m1: mat2 = [[2f32, 1f32],  [3f32, 2f32]];
-//     const v1: vec2 = [1f32, 2f32];
-//     const v2: vec2 = [4f32, 7f32];
+@test fn mat3vec() void = {
+    const m1: mat3 = [[2f32, 1f32, 2f32],  [3f32, 0f32, 1f32], [1f32, 2f32, 0f32]];
+    const v1: vec3 = [1f32, 2f32, 3f32];
+    const v2: vec3 = [11f32, 7f32, 4f32];
 
-//     assert(vec2eq(mat2vec(m1, v1), v2), "matrix vector multiplication incorrect");
-// };
+    assert(vec3eq(mat3vec(m1, v1), v2), "matrix vector multiplication incorrect");
+};
 
 export fn mat3print(v1: mat3) void = {
-    fmt::printfln("[{} {} {}]", v1[0][0], v1[0][1], v1[0][2])!;
-    fmt::printfln("[{} {} {}]", v1[1][0], v1[1][1], v1[1][2])!;
-    fmt::printfln("[{} {} {}]", v1[2][0], v1[2][1], v1[2][2])!;
+    fmt::printfln("[{} {} {}]", v1[0][0], v1[1][0], v1[2][0])!;
+    fmt::printfln("[{} {} {}]", v1[0][1], v1[1][1], v1[2][1])!;
+    fmt::printfln("[{} {} {}]", v1[0][2], v1[1][2], v1[2][2])!;
     fmt::printfln("")!;
 };

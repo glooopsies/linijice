@@ -80,7 +80,7 @@ export fn mat2mul(m1: mat2, m2: mat2) mat2 = {
     for (let i = 0z; i < len(m1); i += 1) {
         for (let j = 0z; j < len(m1[0]); j += 1) {
             for (let k = 0z; k < len(m1); k += 1) {
-                ret[i][j] += m1[i][k] * m2[k][j];
+                ret[j][i] += m1[k][i] * m2[j][k];
             };
         };
     };
@@ -90,9 +90,10 @@ export fn mat2mul(m1: mat2, m2: mat2) mat2 = {
 
 @test fn mat2mul() void = {
     const m1: mat2 = [[2f32, 0f32],  [0f32, 2f32]];
-    const m2: mat2 = [[3f32, 6f32],  [3f32, 6f32]];
-    const m3: mat2 = [[6f32, 12f32], [6f32, 12f32]];
+    const m2: mat2 = [[3f32, 3f32],  [6f32, 6f32]];
+    const m3: mat2 = [[6f32, 6f32], [12f32, 12f32]];
 
+    mat2print(mat2mul(m1, m2));
     assert(mat2eq(mat2mul(m1, m2), m3), "matrices multiplication incorrect");
 };
 
@@ -100,18 +101,19 @@ export fn mat2vec(m1: mat2, v1: vec2) vec2 = {
     let ret: vec2 = [0f32...];
     for (let i = 0z; i < len(m1); i += 1) {
         for (let j = 0z; j < len(m1[0]); j += 1) {
-            ret[i] += m1[i][j] * v1[j];
+            ret[i] += m1[j][i] * v1[j];
         };
     };
 
     return ret;
 };
 
+
 @test fn mat2vec() void = {
-    const m1: mat2 = [[2f32, 1f32],  [3f32, 2f32]];
+    const m1: mat2 = [[2f32, 3f32],  [1f32, 2f32]];
     const v1: vec2 = [1f32, 2f32];
     const v2: vec2 = [4f32, 7f32];
-
+    fmt::printfln("{} {}", v2[0], v2[1])!;
     assert(vec2eq(mat2vec(m1, v1), v2), "matrix vector multiplication incorrect");
 };
 
@@ -124,15 +126,15 @@ export fn mat2to3(m1: mat2) mat3 = {
 };
 
 @test fn mat2to3() void = {
-    const m1: mat2 = [[2f32, 1f32],  [3f32, 2f32]];
-    const m2: mat3 = [[2f32, 1f32, 0f32],  [3f32, 2f32, 0f32], [0f32, 0f32, 1f32]];
+    const m1: mat2 = [[2f32, 3f32],  [1f32, 2f32]];
 
+    const m2: mat3 = [[2f32, 3f32, 0f32],  [1f32, 2f32, 0f32], [0f32, 0f32, 1f32]];
     assert(mat3eq(mat2to3(m1), m2), "matrix cast to 3 deimension incorrect");
 };
 
 export fn mat2print(v1: mat2) void = {
-    fmt::printfln("[{} {}]", v1[0][0], v1[0][1])!;
-    fmt::printfln("[{} {}]", v1[1][0], v1[1][1])!;
+    fmt::printfln("[{} {}]", v1[0][0], v1[1][0])!;
+    fmt::printfln("[{} {}]", v1[0][1], v1[1][1])!;
     fmt::printfln("")!;
 };
 
