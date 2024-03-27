@@ -2,5 +2,5 @@
 .code
 
 build/
-build-dir/
 .flatpak-builder/
+.flatpak-build/

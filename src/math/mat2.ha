@@ -132,9 +132,21 @@ export fn mat2to3(m1: mat2) mat3 = {
     assert(mat3eq(mat2to3(m1), m2), "matrix cast to 3 deimension incorrect");
 };
 
+export fn mat2transpose(m1: mat2) mat2 = {
+    for (let i = 0z; i < len(m1); i += 1) {
+        for (let j = 0z; j < i; j += 1) {
+            const old = m1[i][j];
+            m1[i][j] = m1[j][i];
+            m1[j][i] = old;
+        };
+    };
+
+    return m1;
+};
+
+
 export fn mat2print(v1: mat2) void = {
     fmt::printfln("[{} {}]", v1[0][0], v1[1][0])!;
     fmt::printfln("[{} {}]", v1[0][1], v1[1][1])!;
     fmt::printfln("")!;
 };
-

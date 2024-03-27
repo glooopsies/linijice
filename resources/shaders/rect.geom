@@ -1,19 +1,25 @@
-#version 330 core
+#version 430 core
 
 layout (lines) in;
 layout (triangle_strip, max_vertices = 4) out;
 
+layout (location = 0) in vec2 screen_positions[];
+layout (location = 0) out vec2 _screen_positions[];
+
 void main() {
-    vec4 top_left = gl_in[0].gl_Position;
+    _screen_positions[0] = screen_positions[0];
+    _screen_positions[1] = screen_positions[1];
+
+    vec4 top_left     = gl_in[0].gl_Position;
     vec4 bottom_right = gl_in[1].gl_Position;
 
     gl_Position = top_left;
     EmitVertex();
 
-    gl_Position = vec4(bottom_right.x, top_left.y, 0.0f, 1.0f);
+    gl_Position = vec4(bottom_right.x, top_left.yzw);
     EmitVertex();
 
-    gl_Position = vec4(top_left.x, bottom_right.y, 0.0f, 1.0f);
+    gl_Position = vec4(top_left.x, bottom_right.yzw);
     EmitVertex();
 
     gl_Position = bottom_right;
@@ -21,6 +27,3 @@ void main() {
 
     EndPrimitive();
 }
-
-// flatpak-builder --user --install --force-clean build-dir rs.ac.bg.matf.linijice.json
-// flatpak run rs.ac.bg.matf.linijice

@@ -5,47 +5,33 @@ Adw.ApplicationWindow window {
   title: 'Linijice';
   width-request: 300;
   height-request: 400;
-  default-width: 300;
-  default-height: 400;
 
-  Adw.Breakpoint {
-    condition ("max-width: 500sp")
+  content: Adw.ToolbarView {
 
-    setters {
-      split_view.collapsed: true;
-      show_toolbar.visible: true;
-    }
-  }
+    [top]
+    Adw.HeaderBar header_bar {
 
-  content: Adw.OverlaySplitView split_view {
-    sidebar: Adw.ToolbarView {
-      content: Label {
-        label: "Sidebar";
-      };
-    };
-
-    content: Adw.ToolbarView {
-      [top]
-      Adw.HeaderBar header_bar {
-        [start]
-        Button show_toolbar {
-          icon-name: "sidebar-show-symbolic";
-          visible: false;
-        }
-
-        [end]
-        MenuButton {
-          primary: true;
-          icon-name: 'open-menu-symbolic';
-          tooltip-text: _('Menu');
-          menu-model: primary_menu;
-        }
+      [end]
+      MenuButton {
+        primary: true;
+        icon-name: 'open-menu-symbolic';
+        tooltip-text: _('Menu');
+        menu-model: primary_menu;
       }
+    }
 
-      content: GLArea gl_area {
+    content: Stack {
+      // Box {
+      //   Button {
+      //     icon-name: "paintbrush-symbolic.svg";
+      //     styles ["flat"]
+      //   }
+      // }
+
+      GLArea gl_area {
         width-request: 300;
         height-request: 400;
-      };
+      }
     };
   };
 }

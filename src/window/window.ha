@@ -1,3 +1,2 @@
-export let width = 400; 
-export let height = 500; 
-
+export let width = 300;
+export let height = 400;

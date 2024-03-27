@@ -59,8 +59,8 @@ fn draw_rect(this: *node) void = {
 
     const transform = scene_transform();
     const location = gl::glGetUniformLocation(rect_program, c::nulstr("scene_transform\0"): *i8);
-    gl::glUniformMatrix3fv(location, 1, gl::GL_FALSE, &transform[0][0]: *f32);
 
+    gl::glUniformMatrix3fv(location, 1, gl::GL_FALSE, &transform[0][0]: *f32);
     gl::glDrawArrays(gl::GL_LINES, 0, 2);
 
     return;

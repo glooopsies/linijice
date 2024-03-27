@@ -34,7 +34,7 @@ fn init_ellipse(resources: str) void = {
     const vert_path = strings::concat(resources, "/shaders/scene_transform.vert");
     defer free(vert_path);
 
-    const geom_path = strings::concat(resources, "/shaders/ellipse.geom");
+    const geom_path = strings::concat(resources, "/shaders/rect.geom");
     defer free(geom_path);
 
     const frag_path = strings::concat(resources, "/shaders/ellipse.frag");
@@ -57,6 +57,10 @@ fn draw_ellipse(this: *node) void = {
     gl::glUseProgram(ellipse_program);
     gl::glBindVertexArray(ellipse_VAO);
 
+    const transform = scene_transform();
+    const location = gl::glGetUniformLocation(rect_program, c::nulstr("scene_transform\0"): *i8);
+    gl::glUniformMatrix3fv(location, 1, gl::GL_FALSE, &transform[0]: *f32);
+    
     gl::glUniform1f(gl::glGetUniformLocation(ellipse_program, c::nulstr("width\0"): nullable *const i8), window::width: f32); 
     gl::glUniform1f(gl::glGetUniformLocation(ellipse_program, c::nulstr("height\0"): nullable *const i8), window::height: f32); 
 
