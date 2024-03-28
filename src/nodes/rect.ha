@@ -1,5 +1,4 @@
 use strings;
-use fmt;
 
 use src::gl;
 use src::math;

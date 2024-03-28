@@ -1,5 +1,4 @@
 use types::c;
-use fmt;
 use strings;
 
 use libs::gl;

@@ -118,6 +118,25 @@ export fn mat3vec(m1: mat3, v1: vec3) vec3 = {
     assert(vec3eq(mat3vec(m1, v1), v2), "matrix vector multiplication incorrect");
 };
 
+export fn mat3transpose(m1: mat3) mat3 = {
+    for (let i = 0z; i < len(m1); i += 1) {
+        for (let j = 0z; j < i; j += 1) {
+            const old = m1[i][j];
+            m1[i][j] = m1[j][i];
+            m1[j][i] = old;
+        };
+    };
+
+    return m1;
+};
+
+@test fn mat3transpose() void = {
+    const m1: mat3 = [[2f32, 1f32, 2f32], [3f32, 0f32, 1f32], [1f32, 2f32, 0f32]];
+    const m2: mat3 = [[2f32, 3f32, 1f32], [1f32, 0f32, 2f32], [2f32, 1f32, 0f32]];
+
+    assert(mat3eq(mat3transpose(m1), m2), "matrix transposition incorrect");
+};
+
 export fn mat3print(v1: mat3) void = {
     fmt::printfln("[{} {} {}]", v1[0][0], v1[1][0], v1[2][0])!;
     fmt::printfln("[{} {} {}]", v1[0][1], v1[1][1], v1[2][1])!;

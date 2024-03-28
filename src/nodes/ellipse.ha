@@ -1,4 +1,3 @@
-use fmt;
 use strings;
 use types::c;
 

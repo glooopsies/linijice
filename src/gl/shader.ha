@@ -1,8 +1,5 @@
-use fmt;
-use fs;
 use io;
 use os;
-use errors;
 use types::c;
 use strings;
 

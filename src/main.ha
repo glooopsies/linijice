@@ -13,8 +13,6 @@ use libs::gl;
 use src::nodes;
 use src::window;
 
-use fmt;
-
 fn g_signal_connect(
 		instance: *opaque,
 		detailed_signal: *c::char,

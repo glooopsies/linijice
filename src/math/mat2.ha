@@ -129,7 +129,7 @@ export fn mat2to3(m1: mat2) mat3 = {
     const m1: mat2 = [[2f32, 3f32],  [1f32, 2f32]];
 
     const m2: mat3 = [[2f32, 3f32, 0f32],  [1f32, 2f32, 0f32], [0f32, 0f32, 1f32]];
-    assert(mat3eq(mat2to3(m1), m2), "matrix cast to 3 deimension incorrect");
+    assert(mat3eq(mat2to3(m1), m2), "matrix cast to 3 dimeension incorrect");
 };
 
 export fn mat2transpose(m1: mat2) mat2 = {
@@ -144,6 +144,12 @@ export fn mat2transpose(m1: mat2) mat2 = {
     return m1;
 };
 
+@test fn mat2transpose() void = {
+    const m1: mat2 = [[1f32, 2f32], [3f32, 4f32]];
+    const m2: mat2 = [[1f32, 3f32], [2f32, 4f32]];
+
+    assert(mat2eq(mat2transpose(m1), m2), "matrix transposition incorrect");
+};
 
 export fn mat2print(v1: mat2) void = {
     fmt::printfln("[{} {}]", v1[0][0], v1[1][0])!;
