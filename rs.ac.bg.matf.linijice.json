@@ -101,7 +101,6 @@
           "type": "git",
           "url": "https://git.sr.ht/~yerinalexey/hare-gi",
           "branch": "master"
-        
         },
         {
           "type": "patch",

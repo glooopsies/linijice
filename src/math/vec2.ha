@@ -62,7 +62,7 @@ export fn vec2norm(v1: vec2) f32 = {
 @test fn vec2norm() void = {
     const v1: vec2 = [3f32, 4f32];
     const f1 = 5f32;
-    
+
     assert(vec2norm(v1) == f1, "vector norm incorrect");
 };
 
@@ -78,7 +78,7 @@ export fn vec2normalize(v1: vec2) vec2 = {
 @test fn vec2normalize() void = {
     const v1: vec2 = [3f32, 0f32];
     const v2: vec2 = [1f32, 0f32];
-    
+
     assert(vec2eq(vec2normalize(v1), v2), "vector normalization incorrect");
 };
 
@@ -101,7 +101,7 @@ export fn vec2add(v1: vec2, v2: vec2) vec2 = {
 export fn vec2translation(v1: vec2) mat3 = {
     let mat = mat3id(1f32);
     mat[2][0] = v1[0];
-    mat[2][1] = v1[1]; 
+    mat[2][1] = v1[1];
 
     return mat;
 };
@@ -116,7 +116,7 @@ export fn vec2translation(v1: vec2) mat3 = {
 export fn vec2scale(v1: vec2) mat3 = {
     let mat = mat3id(1f32);
     mat[0][0] = v1[0];
-    mat[1][1] = v1[1]; 
+    mat[1][1] = v1[1];
 
     return mat;
 };

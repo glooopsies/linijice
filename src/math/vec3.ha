@@ -62,7 +62,7 @@ export fn vec3norm(v1: vec3) f32 = {
 @test fn vec3norm() void = {
     const v1: vec3 = [1f32, 1f32, 1f32];
     const f1 = math::sqrtf64(3f64): f32;
-    
+
     assert(vec3norm(v1) == f1, "vector norm incorrect");
 };
 
@@ -78,7 +78,7 @@ export fn vec3normalize(v1: vec3) vec3 = {
 @test fn vec3normalize() void = {
     const v1: vec3 = [3f32, 0f32, 0f32];
     const v2: vec3 = [1f32, 0f32, 0f32];
-    
+
     assert(vec3eq(vec3normalize(v1), v2), "vector normalization incorrect");
 };
 

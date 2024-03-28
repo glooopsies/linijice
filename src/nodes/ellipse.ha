@@ -2,6 +2,7 @@ use fmt;
 use strings;
 use types::c;
 
+use src::gl;
 use src::math;
 use src::window;
 
@@ -42,11 +43,16 @@ fn init_ellipse(resources: str) void = {
     const frag_path = strings::concat(resources, "/shaders/ellipse.frag");
     defer free(frag_path);
 
-    ellipse_program = gl::compile_program([
-        gl::compile_shader(vert_path, gl::GL_VERTEX_SHADER)!,
-        gl::compile_shader(geom_path, gl::GL_GEOMETRY_SHADER)!,
-        gl::compile_shader(frag_path, gl::GL_FRAGMENT_SHADER)!
-    ])!;
+    const program = gl::compile_program([
+        gl::compile_shader(vert_path, gl::GL_VERTEX_SHADER),
+        gl::compile_shader(geom_path, gl::GL_GEOMETRY_SHADER),
+        gl::compile_shader(frag_path, gl::GL_FRAGMENT_SHADER)
+    ]);
+
+    ellipse_program = match(program) {
+    case let shader: uint => yield shader;
+    case let err: gl::error => gl::check_error(err);
+    };
 
     gl::glGenVertexArrays(1, &ellipse_VAO);
     gl::glGenBuffers(1, &ellipse_VBO);
@@ -62,19 +68,19 @@ fn draw_ellipse(this: *node) void = {
     const transform = scene_transform();
     const location = gl::glGetUniformLocation(rect_program, c::nulstr("scene_transform\0"): *i8);
     gl::glUniformMatrix3fv(location, 1, gl::GL_FALSE, &transform[0]: *f32);
-    
-    gl::glUniform1f(gl::glGetUniformLocation(ellipse_program, c::nulstr("width\0"): nullable *const i8), window::width: f32); 
-    gl::glUniform1f(gl::glGetUniformLocation(ellipse_program, c::nulstr("height\0"): nullable *const i8), window::height: f32); 
+
+    gl::glUniform1f(gl::glGetUniformLocation(ellipse_program, c::nulstr("width\0"): nullable *const i8), window::width: f32);
+    gl::glUniform1f(gl::glGetUniformLocation(ellipse_program, c::nulstr("height\0"): nullable *const i8), window::height: f32);
 
     gl::glDrawArrays(gl::GL_LINES, 0, 2);
 };
 
 fn ellipse_upload(this: *ellipse) void = {
     const array = [
-        this.position[0], this.position[1], 
+        this.position[0], this.position[1],
         this.color[0], this.color[1], this.color[2], this.color[3],
 
-        this.position[0] + this.r1, this.position[1] + this.r2, 
+        this.position[0] + this.r1, this.position[1] + this.r2,
         this.color[0], this.color[1], this.color[2], this.color[3],
     ];
 

@@ -16,17 +16,17 @@ use src::window;
 use fmt;
 
 fn g_signal_connect(
-		instance: *opaque, 
-		detailed_signal: *c::char, 
-		c_handler: gobject::Callback, 
+		instance: *opaque,
+		detailed_signal: *c::char,
+		c_handler: gobject::Callback,
 		data: nullable *opaque) void = {
 
     gobject::signal_connect_data(
-		instance, 
-		detailed_signal, 
-		c_handler, 
-		data: *opaque, 
-		null: gobject::ClosureNotify, 
+		instance,
+		detailed_signal,
+		c_handler,
+		data: *opaque,
+		null: gobject::ClosureNotify,
 		0u: gobject::ConnectFlags
 	);
 };

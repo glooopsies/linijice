@@ -1,5 +1,7 @@
-use src::math;
 use fmt;
+
+use src::gl;
+use src::math;
 
 export type node = struct {
     position:    math::vec2,
@@ -23,7 +25,7 @@ export fn init(resources: str) void = {
     init_rect(resources);
     init_ellipse(resources);
     scene_init(resources);
-    
+
     new_scene();
 };
 
@@ -32,4 +34,5 @@ export fn finalize() void = {
     finalize_ellipse();
 
     scene_free();
+    gl::msaa_finalize();
 };

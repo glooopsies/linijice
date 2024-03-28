@@ -1,6 +1,7 @@
 use strings;
 use fmt;
 
+use src::gl;
 use src::math;
 use src::window;
 
@@ -41,11 +42,16 @@ fn init_rect(resources: str) void = {
     const frag_path = strings::concat(resources, "/shaders/rect.frag");
     defer free(frag_path);
 
-    rect_program = gl::compile_program([
-        gl::compile_shader(vert_path, gl::GL_VERTEX_SHADER)!,
-        gl::compile_shader(geom_path, gl::GL_GEOMETRY_SHADER)!,
-        gl::compile_shader(frag_path, gl::GL_FRAGMENT_SHADER)!
-    ])!;
+    const program = gl::compile_program([
+        gl::compile_shader(vert_path, gl::GL_VERTEX_SHADER),
+        gl::compile_shader(geom_path, gl::GL_GEOMETRY_SHADER),
+        gl::compile_shader(frag_path, gl::GL_FRAGMENT_SHADER)
+    ]);
+
+    rect_program = match(program) {
+    case let shader: uint => yield shader;
+    case let err: gl::error => gl::check_error(err);
+    };
 
     gl::glGenVertexArrays(1, &rect_VAO);
     gl::glGenBuffers(1, &rect_VBO);
@@ -70,10 +76,10 @@ fn draw_rect(this: *node) void = {
 
 fn rect_upload(this: *rect) void = {
     const array = [
-        this.position[0], this.position[1], 
+        this.position[0], this.position[1],
         this.color[0], this.color[1], this.color[2], this.color[3],
 
-        this.position[0] + this.w, this.position[1] + this.h, 
+        this.position[0] + this.w, this.position[1] + this.h,
         this.color[0], this.color[1], this.color[2], this.color[3],
     ];
 

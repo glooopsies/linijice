@@ -6,7 +6,7 @@
  MODULES3 = $(CORE_MODULES) gdk gtk
 -MODULES4 = $(CORE_MODULES) gdk4 gtk4 pangocairo graphene gsk
 +MODULES4 = $(CORE_MODULES) gdk4 gtk4 pangocairo graphene gsk adw
- 
+
  DESTDIR =
  PREFIX = /usr/local
 diff --git a/generate4 b/generate4
@@ -19,7 +19,7 @@ index 23061f0..1d1f6f9 100755
  	"$BIND"/pango "$BIND"/pangocairo "$BIND"/gdk4 "$BIND"/xlib "$BIND"/graphene \
 -	"$BIND"/gsk "$BIND"/gtk4
 +	"$BIND"/gsk "$BIND"/gtk4 "$BIND"/adw
- 
+
  hare build cmd/hare-gi && ./hare-gi -B \
  	-m GLib,glib,"$BIND"/glib/_generated.ha \
 @@ -24,6 +24,7 @@ hare build cmd/hare-gi && ./hare-gi -B \
