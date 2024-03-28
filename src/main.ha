@@ -50,6 +50,8 @@ fn render(area: *gtk4::GLArea, context: *opaque) bool = {
 fn gl_resize(widget: *gtk4::GLArea, w: int, h: int, data: *opaque) void = {
 	window::width = w;
 	window::height = h;
+
+	nodes::scene_resize();
 };
 
 fn activate(app: *gio::Application, user_data: *opaque) void = {
@@ -57,8 +59,6 @@ fn activate(app: *gio::Application, user_data: *opaque) void = {
 
 	const main_ui = strings::concat(resources, "/builder.ui\0");
 	defer free(main_ui);
-
-	fmt::println(main_ui)!;
 
 	const builder = gtk4::builder_new();
 	gtk4::builder_add_from_file(builder, c::nulstr(main_ui), null);
