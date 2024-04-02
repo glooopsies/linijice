@@ -101,6 +101,4 @@ fn finalize_ellipse() void = {
     gl::glDeleteVertexArrays(1, &ellipse_VAO);
     gl::glDeleteBuffers(1, &ellipse_VBO);
     gl::glDeleteProgram(ellipse_program);
-
-    return;
 };

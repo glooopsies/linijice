@@ -34,13 +34,21 @@ export fn new_scene() void = {
 
         paper = make_rect([0f32, 0f32], width, height, [1f32, 1f32, 1f32, 1f32]),
         layers = alloc([
-            alloc([make_ellipse([100f32, 100f32], 200f32, 100f32, [0f32, 0.6f32, 0.6f32, 0.5f32])])
+            alloc([make_ellipse([100f32, 100f32], 0f32, 0f32, [0f32, 0.6f32, 0.6f32, 0.5f32])])
         ]),
     });
 };
 
 export fn scene_resize() void = {
     gl::msaa_resize();
+};
+
+export fn scene_append(node: *node) void = {
+    if (active_scene == null) { return; };
+    let active_scene = active_scene: *scene;
+
+    const layer = len(active_scene.layers) - 1;
+    append(active_scene.layers[layer], node);
 };
 
 fn scene_init(resources: str) void = {

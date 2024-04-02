@@ -68,8 +68,6 @@ fn draw_rect(this: *node) void = {
 
     gl::glUniformMatrix3fv(location, 1, gl::GL_FALSE, &transform[0][0]: *f32);
     gl::glDrawArrays(gl::GL_LINES, 0, 2);
-
-    return;
 };
 
 fn rect_upload(this: *rect) void = {
@@ -100,6 +98,4 @@ fn finalize_rect() void = {
     gl::glDeleteVertexArrays(1, &rect_VAO);
     gl::glDeleteBuffers(1, &rect_VBO);
     gl::glDeleteProgram(rect_program);
-
-    return;
 };

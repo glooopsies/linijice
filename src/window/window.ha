@@ -8,23 +8,7 @@ use gdk4;
 use gobject;
 use gtk4;
 
-fn g_signal_connect(
-		instance: *opaque,
-		detailed_signal: *c::char,
-		c_handler: gobject::Callback,
-		data: nullable *opaque) void = {
-
-    gobject::signal_connect_data(
-		instance,
-		detailed_signal,
-		c_handler,
-		data: *opaque,
-		null: gobject::ClosureNotify,
-		0u: gobject::ConnectFlags
-	);
-};
-
-const GTK_STYLE_PROVIDER_PRIORITY_USER = 800u;
+use src::g;
 
 fn resources_init(resources: str) (void|errors::invalid) = {
 	const gresources = strings::concat(resources, "/data.gresource\0");
@@ -45,7 +29,7 @@ fn resources_init(resources: str) (void|errors::invalid) = {
 	const display = gdk4::display_get_default();
 	gtk4::style_context_add_provider_for_display(
         display, css_provider: *gtk4::StyleProvider, 
-        GTK_STYLE_PROVIDER_PRIORITY_USER
+        g::GTK_STYLE_PROVIDER_PRIORITY_USER
     );
 };
 
