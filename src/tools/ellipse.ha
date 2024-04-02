@@ -4,7 +4,7 @@ use src::nodes;
 const ellipse = tool {
     mouse_down = &ellipse_down,
     mouse_move = &ellipse_move,
-    mouse_up = &ellipse_up,
+    mouse_up   = &ellipse_up,
 };
 
 let ellipse_selected: nullable *nodes::ellipse = null;

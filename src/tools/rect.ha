@@ -4,7 +4,7 @@ use src::nodes;
 const rect = tool {
     mouse_down = &rect_down,
     mouse_move = &rect_move,
-    mouse_up = &rect_up,
+    mouse_up   = &rect_up,
 };
 
 let rect_selected: nullable *nodes::rect = null;

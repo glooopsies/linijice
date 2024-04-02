@@ -10,7 +10,7 @@ use src::math;
 type tool = struct {
     mouse_down: *fn(x: f32, y:f32) void,
     mouse_move: *fn(x: f32, y:f32) void,
-    mouse_up: *fn(x: f32, y:f32) void,
+    mouse_up:   *fn(x: f32, y:f32) void,
 };
 
 const tools = [
@@ -39,7 +39,7 @@ export fn init(builder: *gtk4::Builder) void = {
     };
 };
 
-let color: math::vec4 = [0f32, 0.5f32, 0.5f32, 0.5f32];
+export let color: math::vec4 = [0.1f32, 0.1f32, 0.1f32, 1f32];
 
 let active_tool = &rect;
 

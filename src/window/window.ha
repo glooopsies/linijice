@@ -50,6 +50,7 @@ export fn init(app: *adw::Application, resources: str) void = {
 	defer gobject::object_unref(builder);
 
     draw_area_init(builder, resources);
+	color_button_init(builder);
 
 	const window = gtk4::builder_get_object(
         builder, 
