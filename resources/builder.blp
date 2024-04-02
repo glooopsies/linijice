@@ -20,17 +20,40 @@ Adw.ApplicationWindow window {
       }
     }
 
-    content: Stack {
-      // Box {
-      //   Button {
-      //     icon-name: "paintbrush-symbolic.svg";
-      //     styles ["flat"]
-      //   }
-      // }
+    content: Overlay {
+      GLArea gl_area {}
 
-      GLArea gl_area {
-        width-request: 300;
-        height-request: 400;
+      [overlay]
+      Box {
+        halign: start;
+        orientation: vertical;
+        margin-start: 6;
+        valign: center;
+        styles ["background", "toolbar"]
+
+        ToggleButton tool_rect {
+          icon-name: "square-filled";
+          active: true;
+          styles ["flat"]
+        }
+
+        ToggleButton tool_ellipse {
+          icon-name: "circle-filled";
+          group: tool_rect;
+          styles ["flat"]
+        }
+
+        ToggleButton tool_bezier {
+          icon-name: "function-third-order";
+          group: tool_rect;
+          styles ["flat"]
+        }
+
+        ToggleButton tool_move {
+          icon-name: "move-tool";
+          group: tool_rect;
+          styles ["flat"]
+        }
       }
     };
   };

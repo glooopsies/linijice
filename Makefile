@@ -8,7 +8,7 @@ RESOUT = build/resources
 
 .PHONY: $(BINOUT)/main
 
-$(BINOUT)/main: $(RESOUT)/builder.ui $(RESOUT)/shaders $(RESOUT)/icons build
+$(BINOUT)/main: $(RESOUT)/builder.ui $(RESOUT)/shaders $(RESOUT)/data.gresource build
 	hare build \
 		-j 4 \
 		$$(pkg-config --libs-only-l --static libadwaita-1 epoxy) \
@@ -17,14 +17,13 @@ $(BINOUT)/main: $(RESOUT)/builder.ui $(RESOUT)/shaders $(RESOUT)/icons build
 
 $(RESOUT)/shaders: resources/shaders
 	mkdir -p $@
-	cp -r $^/* $@
-
-$(RESOUT)/icons: resources/icons
-	mkdir -p $@
-	cp -r $^/* $@
+	cp -r $</* $@
 
 $(RESOUT)/builder.ui: resources/builder.blp $(RESOUT)
-	blueprint-compiler compile  $< --output $@
+	blueprint-compiler compile $< --output $@
+
+$(RESOUT)/data.gresource: resources/data.gresource.xml $(RESOUT)
+	glib-compile-resources --sourcedir="resources" --target=$@ --generate $<
 
 $(RESOUT):
 	mkdir -p build/resources

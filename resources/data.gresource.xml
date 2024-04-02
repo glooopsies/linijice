@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/rs/ac/bg/matf/linijice/icons/scalable/actions/">
+    <file alias="circle-filled-symbolic.svg">icons/circle-filled-symbolic.svg</file>
+    <file alias="function-third-order-symbolic.svg">icons/function-third-order-symbolic.svg</file>
+    <file alias="move-tool-symbolic.svg">icons/move-tool-symbolic.svg</file>
+    <file alias="paintbrush-symbolic.svg">icons/paintbrush-symbolic.svg</file>
+    <file alias="square-filled-symbolic.svg">icons/square-filled-symbolic.svg</file>
+  </gresource>
+  <gresource prefix="/rs/ac/bg/matf/linijice">
+    <file>style.css</file>
+  </gresource>
+</gresources>
