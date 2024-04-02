@@ -2,7 +2,6 @@ use strings;
 
 use src::gl;
 use src::math;
-use src::window;
 
 use types::c;
 use libs::gl;

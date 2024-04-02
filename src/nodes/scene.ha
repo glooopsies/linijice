@@ -3,7 +3,6 @@ use types::c;
 use libs::gl;
 use src::gl;
 use src::math;
-use src::window;
 
 export type layer = []*node;
 export type scene = struct {
@@ -58,7 +57,7 @@ fn scene_init(resources: str) void = {
 fn scene_transform() math::mat3 = {
     return math::mat3mul(
         math::vec2translation([-1f32, 1f32]),
-        math::vec2scale([2f32/(window::width: f32), -2f32/(window::height: f32)])
+        math::vec2scale([2f32/(gl::width: f32), -2f32/(gl::height: f32)])
     );
 };
 

@@ -2,7 +2,6 @@ use types::c;
 use strings;
 
 use libs::gl;
-use src::window;
 
 export type msaa_error = !str;
 
@@ -18,15 +17,15 @@ let rbo = 0u;
 
 export fn msaa_resize() void = {
     gl::glBindTexture(gl::GL_TEXTURE_2D_MULTISAMPLE, textureColorBufferMultiSampled);
-    gl::glTexImage2DMultisample(gl::GL_TEXTURE_2D_MULTISAMPLE, 8, gl::GL_RGB, window::width, window::height, gl::GL_TRUE);
+    gl::glTexImage2DMultisample(gl::GL_TEXTURE_2D_MULTISAMPLE, 8, gl::GL_RGB, width, height, gl::GL_TRUE);
     gl::glBindTexture(gl::GL_TEXTURE_2D_MULTISAMPLE, 0);
 
     gl::glBindRenderbuffer(gl::GL_RENDERBUFFER, rbo);
-    gl::glRenderbufferStorageMultisample(gl::GL_RENDERBUFFER, 8, gl::GL_DEPTH24_STENCIL8, window::width, window::height);
+    gl::glRenderbufferStorageMultisample(gl::GL_RENDERBUFFER, 8, gl::GL_DEPTH24_STENCIL8, width, height);
     gl::glBindRenderbuffer(gl::GL_RENDERBUFFER, 0);
 
     gl::glBindTexture(gl::GL_TEXTURE_2D, screenTexture);
-    gl::glTexImage2D(gl::GL_TEXTURE_2D, 0, gl::GL_RGB: i32, window::width, window::height, 0, gl::GL_RGB, gl::GL_UNSIGNED_BYTE, null);
+    gl::glTexImage2D(gl::GL_TEXTURE_2D, 0, gl::GL_RGB: i32, width, height, 0, gl::GL_RGB, gl::GL_UNSIGNED_BYTE, null);
 };
 
 export fn msaa_init(resources: str) (void | error) = {
@@ -70,13 +69,13 @@ export fn msaa_init(resources: str) (void | error) = {
 
     gl::glGenTextures(1, &textureColorBufferMultiSampled);
     gl::glBindTexture(gl::GL_TEXTURE_2D_MULTISAMPLE, textureColorBufferMultiSampled);
-    gl::glTexImage2DMultisample(gl::GL_TEXTURE_2D_MULTISAMPLE, samples, gl::GL_RGB, window::width, window::height, gl::GL_TRUE);
+    gl::glTexImage2DMultisample(gl::GL_TEXTURE_2D_MULTISAMPLE, samples, gl::GL_RGB, width, height, gl::GL_TRUE);
     gl::glBindTexture(gl::GL_TEXTURE_2D_MULTISAMPLE, 0);
     gl::glFramebufferTexture2D(gl::GL_FRAMEBUFFER, gl::GL_COLOR_ATTACHMENT0, gl::GL_TEXTURE_2D_MULTISAMPLE, textureColorBufferMultiSampled, 0);
 
     gl::glGenRenderbuffers(1, &rbo);
     gl::glBindRenderbuffer(gl::GL_RENDERBUFFER, rbo);
-    gl::glRenderbufferStorageMultisample(gl::GL_RENDERBUFFER, samples, gl::GL_DEPTH24_STENCIL8, window::width, window::height);
+    gl::glRenderbufferStorageMultisample(gl::GL_RENDERBUFFER, samples, gl::GL_DEPTH24_STENCIL8, width, height);
     gl::glBindRenderbuffer(gl::GL_RENDERBUFFER, 0);
     gl::glFramebufferRenderbuffer(gl::GL_FRAMEBUFFER, gl::GL_DEPTH_STENCIL_ATTACHMENT, gl::GL_RENDERBUFFER, rbo);
 
@@ -90,7 +89,7 @@ export fn msaa_init(resources: str) (void | error) = {
 
     gl::glGenTextures(1, &screenTexture);
     gl::glBindTexture(gl::GL_TEXTURE_2D, screenTexture);
-    gl::glTexImage2D(gl::GL_TEXTURE_2D, 0, gl::GL_RGB: i32, window::width, window::height, 0, gl::GL_RGB, gl::GL_UNSIGNED_BYTE, null);
+    gl::glTexImage2D(gl::GL_TEXTURE_2D, 0, gl::GL_RGB: i32, width, height, 0, gl::GL_RGB, gl::GL_UNSIGNED_BYTE, null);
     gl::glTexParameteri(gl::GL_TEXTURE_2D, gl::GL_TEXTURE_MIN_FILTER, gl::GL_LINEAR: i32);
     gl::glTexParameteri(gl::GL_TEXTURE_2D, gl::GL_TEXTURE_MAG_FILTER, gl::GL_LINEAR: i32);
     gl::glFramebufferTexture2D(gl::GL_FRAMEBUFFER, gl::GL_COLOR_ATTACHMENT0, gl::GL_TEXTURE_2D, screenTexture, 0);
@@ -118,7 +117,7 @@ export fn msaa_start() void = {
 export fn msaa_end() void = {
     gl::glBindFramebuffer(gl::GL_READ_FRAMEBUFFER, framebuffer);
     gl::glBindFramebuffer(gl::GL_DRAW_FRAMEBUFFER, intermediateFBO);
-    gl::glBlitFramebuffer(0, 0, window::width, window::height, 0, 0, window::width, window::height, gl::GL_COLOR_BUFFER_BIT, gl::GL_NEAREST);
+    gl::glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, gl::GL_COLOR_BUFFER_BIT, gl::GL_NEAREST);
 
     gl::glBindFramebuffer(gl::GL_DRAW_FRAMEBUFFER, draw_fb: uint);
     gl::glBindFramebuffer(gl::GL_READ_FRAMEBUFFER, read_fb: uint);
