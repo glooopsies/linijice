@@ -24,6 +24,31 @@ fn g_signal_connect(
 	);
 };
 
+const GTK_STYLE_PROVIDER_PRIORITY_USER = 800u;
+
+fn resources_init(resources: str) (void|errors::invalid) = {
+	const gresources = strings::concat(resources, "/data.gresource\0");
+	defer free(gresources);
+
+	const gresources = gio::resource_load(c::nulstr(gresources), null);
+	if (gresources == null) {
+		return void: errors::invalid;
+	};
+	gio::resource__register(gresources);
+
+	const css_provider = gtk4::css_provider_new();
+	gtk4::css_provider_load_from_resource(
+        css_provider, 
+        c::nulstr("/rs/ac/bg/matf/linijice/style.css\0")
+    );
+
+	const display = gdk4::display_get_default();
+	gtk4::style_context_add_provider_for_display(
+        display, css_provider: *gtk4::StyleProvider, 
+        GTK_STYLE_PROVIDER_PRIORITY_USER
+    );
+};
+
 fn builder_init(resources: str) *gtk4::Builder = {
 	const main_ui = strings::concat(resources, "/builder.ui\0");
 	defer free(main_ui);
@@ -35,6 +60,8 @@ fn builder_init(resources: str) *gtk4::Builder = {
 };
 
 export fn init(app: *adw::Application, resources: str) void = {
+    resources_init(resources)!;
+
     const builder = builder_init(resources);
 	defer gobject::object_unref(builder);
 
