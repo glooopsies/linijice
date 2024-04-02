@@ -6,6 +6,8 @@ use src::window;
 
 export type msaa_error = !str;
 
+const samples = 8;
+
 let msaa_program = 0u;
 let framebuffer = 0u;
 let intermediateFBO = 0u;
@@ -68,13 +70,13 @@ export fn msaa_init(resources: str) (void | error) = {
 
     gl::glGenTextures(1, &textureColorBufferMultiSampled);
     gl::glBindTexture(gl::GL_TEXTURE_2D_MULTISAMPLE, textureColorBufferMultiSampled);
-    gl::glTexImage2DMultisample(gl::GL_TEXTURE_2D_MULTISAMPLE, 4, gl::GL_RGB, window::width, window::height, gl::GL_TRUE);
+    gl::glTexImage2DMultisample(gl::GL_TEXTURE_2D_MULTISAMPLE, samples, gl::GL_RGB, window::width, window::height, gl::GL_TRUE);
     gl::glBindTexture(gl::GL_TEXTURE_2D_MULTISAMPLE, 0);
     gl::glFramebufferTexture2D(gl::GL_FRAMEBUFFER, gl::GL_COLOR_ATTACHMENT0, gl::GL_TEXTURE_2D_MULTISAMPLE, textureColorBufferMultiSampled, 0);
 
     gl::glGenRenderbuffers(1, &rbo);
     gl::glBindRenderbuffer(gl::GL_RENDERBUFFER, rbo);
-    gl::glRenderbufferStorageMultisample(gl::GL_RENDERBUFFER, 4, gl::GL_DEPTH24_STENCIL8, window::width, window::height);
+    gl::glRenderbufferStorageMultisample(gl::GL_RENDERBUFFER, samples, gl::GL_DEPTH24_STENCIL8, window::width, window::height);
     gl::glBindRenderbuffer(gl::GL_RENDERBUFFER, 0);
     gl::glFramebufferRenderbuffer(gl::GL_FRAMEBUFFER, gl::GL_DEPTH_STENCIL_ATTACHMENT, gl::GL_RENDERBUFFER, rbo);
 

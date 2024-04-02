@@ -50,8 +50,8 @@ export fn compile_program(shaders: [](uint | error)) (uint | error) = {
 
     const program = gl::glCreateProgram();
 
-    for (let i = 0z; i < len(shaders); i += 1) {
-        match (shaders[i]) {
+    for (let shader .. shaders) {
+        match (shader) {
         case let shader: uint =>
             gl::glAttachShader(program, shader);
             defer gl::glDeleteShader(shader);

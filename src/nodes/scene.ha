@@ -71,9 +71,9 @@ fn _scene_draw(this: *node) void = {
     // gl::glEnable(gl::GL_DEPTH_TEST);
 
     this.paper.draw(this.paper);
-    for (let i = 0z; i < len(this.layers); i += 1) {
-        for (let j = 0z; j < len(this.layers[i]); j += 1) {
-            this.layers[i][j].draw(this.layers[i][j]);
+    for (let layer &.. this.layers) {
+        for (let node .. layer) {
+            node.draw(node);
         };
     };
 
