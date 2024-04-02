@@ -49,7 +49,7 @@
         {
           "type": "git",
           "url": "https://git.sr.ht/~sircmpwn/harec",
-          "tag": "0.24.0"
+          "tag": "master"
         }
       ]
     },
@@ -79,7 +79,7 @@
         {
           "type": "git",
           "url": "https://git.sr.ht/~sircmpwn/hare",
-          "tag": "0.24.0"
+          "tag": "master"
         },
         {
           "type": "patch",
