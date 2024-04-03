@@ -41,10 +41,10 @@ export fn mat3eq(m1: mat3, m2: mat3) bool = {
 
 export fn mat3add(matrices: mat3...) mat3 = {
     let ret: mat3 = [[0f32...]...];
-    for(let index = 0z; index < len(matrices); index += 1){
+    for(let matrix &.. matrices){
         for (let i = 0z; i < len(ret); i += 1) {
             for (let j = 0z; j < len(ret[0]); j += 1) {
-                ret[i][j] += matrices[index][i][j];
+                ret[i][j] += matrix[i][j];
             };
         };
     };
@@ -83,12 +83,12 @@ export fn mat3fmul(f1: f32, m1: mat3) mat3 = {
 
 export fn mat3mul(matrices: mat3...) mat3 = {
     let ret = mat3id(1f32);
-    for (let index = 0z; index < len(matrices); index+=1) {
+    for (let matrix &.. matrices) {
         let tmp: mat3 = [[0f32...]...];
         for (let i = 0z; i < len(ret); i += 1) {
             for (let j = 0z; j < len(ret[0]); j += 1) {
                 for (let k = 0z; k < len(ret); k += 1) {
-                    tmp[j][i] += ret[k][i] * matrices[index][j][k];
+                    tmp[j][i] += ret[k][i] * matrix[j][k];
                 };
             };
         };

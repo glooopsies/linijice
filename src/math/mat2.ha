@@ -40,10 +40,10 @@ export fn mat2eq(m1: mat2, m2: mat2) bool = {
 
 export fn mat2add(matrices: mat2...) mat2 = {
     let ret = mat2id(0f32);
-    for (let index = 0z; index < len(matrices); index += 1){
+    for (let matrix &.. matrices){
         for (let i = 0z; i < len(ret); i += 1) {
             for (let j = 0z; j < len(ret[0]); j += 1) {
-                ret[i][j] += matrices[index][i][j];
+                ret[i][j] += matrix[i][j];
             };
         };
     };
@@ -80,12 +80,12 @@ export fn mat2fmul(f1: f32, m1: mat2) mat2 = {
 
 export fn mat2mul(matrices: mat2...) mat2 = {
     let ret = mat2id(1f32);
-    for (let index = 0z; index < len(matrices); index += 1){
+    for (let matrix &.. matrices){
         let tmp: mat2 = [[0f32...]...];
         for (let i = 0z; i < len(ret); i += 1) {
             for (let j = 0z; j < len(ret[0]); j += 1) {
                 for (let k = 0z; k < len(ret); k += 1) {
-                    tmp[j][i] += ret[k][i] * matrices[index][j][k];
+                    tmp[j][i] += ret[k][i] * matrix[j][k];
                 };
             };
         };
