@@ -39,11 +39,13 @@ export fn mat3eq(m1: mat3, m2: mat3) bool = {
     assert(mat3eq(m1, m3) == false, "matrices are equal");
 };
 
-export fn mat3add(m1: mat3, m2: mat3) mat3 = {
+export fn mat3add(matrices: mat3...) mat3 = {
     let ret: mat3 = [[0f32...]...];
-    for (let i = 0z; i < 3; i += 1) {
-        for (let j = 0z; j < 3; j += 1) {
-            ret[i][j] = m1[i][j] + m2[i][j];
+    for(let index = 0z; index < len(matrices); index += 1){
+        for (let i = 0z; i < len(ret); i += 1) {
+            for (let j = 0z; j < len(ret[0]); j += 1) {
+                ret[i][j] += matrices[index][i][j];
+            };
         };
     };
 
@@ -53,9 +55,10 @@ export fn mat3add(m1: mat3, m2: mat3) mat3 = {
 @test fn mat3add() void = {
     const m1: mat3 = [[1f32, 1f32, 1f32], [1f32, 1f32, 1f32], [1f32, 1f32, 1f32]];
     const m2: mat3 = [[1f32, 1f32, 1f32], [1f32, 1f32, 1f32], [1f32, 1f32, 2f32]];
-    const m3: mat3 = [[2f32, 2f32, 2f32], [2f32, 2f32, 2f32], [2f32, 2f32, 3f32]];
+    const m3 = mat3id(1f32);
+    const m4: mat3 = [[3f32, 2f32, 2f32], [2f32, 3f32, 2f32], [2f32, 2f32, 4f32]];
 
-    assert(mat3eq(mat3add(m1, m2), m3), "matrices addition incorrect");
+    assert(mat3eq(mat3add(m1, m2, m3), m4), "matrices addition incorrect");
 };
 
 export fn mat3fmul(f1: f32, m1: mat3) mat3 = {
@@ -78,14 +81,18 @@ export fn mat3fmul(f1: f32, m1: mat3) mat3 = {
 };
 
 
-export fn mat3mul(m1: mat3, m2: mat3) mat3 = {
-    let ret: mat3 = [[0f32...]...];
-    for (let i = 0z; i < len(m1); i += 1) {
-        for (let j = 0z; j < len(m1[0]); j += 1) {
-            for (let k = 0z; k < len(m1); k += 1) {
-                ret[j][i] += m1[k][i] * m2[j][k];
+export fn mat3mul(matrices: mat3...) mat3 = {
+    let ret = mat3id(1f32);
+    for (let index = 0z; index < len(matrices); index+=1) {
+        let tmp: mat3 = [[0f32...]...];
+        for (let i = 0z; i < len(ret); i += 1) {
+            for (let j = 0z; j < len(ret[0]); j += 1) {
+                for (let k = 0z; k < len(ret); k += 1) {
+                    tmp[j][i] += ret[k][i] * matrices[index][j][k];
+                };
             };
         };
+        ret = tmp;
     };
 
     return ret;
@@ -94,9 +101,11 @@ export fn mat3mul(m1: mat3, m2: mat3) mat3 = {
 @test fn mat3mul() void = {
     const m1: mat3 = [[2f32, 0f32, 0f32],  [0f32, 2f32, 0f32],  [0f32, 0f32, 2f32]];
     const m2: mat3 = [[3f32, 6f32, 3f32],  [3f32, 6f32, 3f32],  [3f32, 6f32, 3f32]];
-    const m3: mat3 = [[6f32, 12f32, 6f32], [6f32, 12f32, 6f32], [6f32, 12f32, 6f32]];
+    const m3: mat3 = mat3id(1f32);
+    const m4: mat3 = [[6f32, 12f32, 6f32], [6f32, 12f32, 6f32], [6f32, 12f32, 6f32]];
+    
 
-    assert(mat3eq(mat3mul(m1, m2), m3), "matrices multiplication incorrect");
+    assert(mat3eq(mat3mul(m1, m2, m3), m4), "matrices multiplication incorrect");
 };
 
 export fn mat3vec(m1: mat3, v1: vec3) vec3 = {

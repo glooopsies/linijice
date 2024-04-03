@@ -38,22 +38,26 @@ export fn mat2eq(m1: mat2, m2: mat2) bool = {
     assert(mat2eq(m1, m3) == false, "matrices are equal");
 };
 
-export fn mat2add(m1: mat2, m2: mat2) mat2 = {
-    for (let i = 0z; i < len(m1); i += 1) {
-        for (let j = 0z; j < len(m1[0]); j += 1) {
-            m1[i][j] += m2[i][j];
+export fn mat2add(matrices: mat2...) mat2 = {
+    let ret = mat2id(0f32);
+    for (let index = 0z; index < len(matrices); index += 1){
+        for (let i = 0z; i < len(ret); i += 1) {
+            for (let j = 0z; j < len(ret[0]); j += 1) {
+                ret[i][j] += matrices[index][i][j];
+            };
         };
     };
 
-    return m1;
+    return ret;
 };
 
 @test fn mat2add() void = {
     const m1: mat2 = [[1f32, 2f32], [1f32, 2f32]];
     const m2: mat2 = [[1f32, 2f32], [1f32, 2f32]];
-    const m3: mat2 = [[2f32, 4f32], [2f32, 4f32]];
+    const m3 = mat2id(2f32);
+    const m4: mat2 = [[4f32, 4f32], [2f32, 6f32]];
 
-    assert(mat2eq(mat2add(m1, m2), m3), "matrices addition incorrect");
+    assert(mat2eq(mat2add(m1, m2, m3), m4), "matrices addition incorrect");
 };
 
 export fn mat2fmul(f1: f32, m1: mat2) mat2 = {
@@ -74,15 +78,18 @@ export fn mat2fmul(f1: f32, m1: mat2) mat2 = {
     assert(mat2eq(mat2fmul(f1, m1), m2), "matrices f32 multiplication incorrect");
 };
 
-export fn mat2mul(m1: mat2, m2: mat2) mat2 = {
-    let ret: mat2 = [[0f32...]...];
-
-    for (let i = 0z; i < len(m1); i += 1) {
-        for (let j = 0z; j < len(m1[0]); j += 1) {
-            for (let k = 0z; k < len(m1); k += 1) {
-                ret[j][i] += m1[k][i] * m2[j][k];
+export fn mat2mul(matrices: mat2...) mat2 = {
+    let ret = mat2id(1f32);
+    for (let index = 0z; index < len(matrices); index += 1){
+        let tmp: mat2 = [[0f32...]...];
+        for (let i = 0z; i < len(ret); i += 1) {
+            for (let j = 0z; j < len(ret[0]); j += 1) {
+                for (let k = 0z; k < len(ret); k += 1) {
+                    tmp[j][i] += ret[k][i] * matrices[index][j][k];
+                };
             };
         };
+        ret = tmp;
     };
 
     return ret;
@@ -91,10 +98,10 @@ export fn mat2mul(m1: mat2, m2: mat2) mat2 = {
 @test fn mat2mul() void = {
     const m1: mat2 = [[2f32, 0f32],  [0f32, 2f32]];
     const m2: mat2 = [[3f32, 3f32],  [6f32, 6f32]];
-    const m3: mat2 = [[6f32, 6f32], [12f32, 12f32]];
+    const m3 = mat2id(1f32);
+    const m4: mat2 = [[6f32, 6f32], [12f32, 12f32]];
 
-    mat2print(mat2mul(m1, m2));
-    assert(mat2eq(mat2mul(m1, m2), m3), "matrices multiplication incorrect");
+    assert(mat2eq(mat2mul(m1, m2, m3), m4), "matrices multiplication incorrect");
 };
 
 export fn mat2vec(m1: mat2, v1: vec2) vec2 = {
