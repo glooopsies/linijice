@@ -17,11 +17,11 @@ let rbo = 0u;
 
 export fn msaa_resize() void = {
     gl::glBindTexture(gl::GL_TEXTURE_2D_MULTISAMPLE, textureColorBufferMultiSampled);
-    gl::glTexImage2DMultisample(gl::GL_TEXTURE_2D_MULTISAMPLE, 8, gl::GL_RGB, width, height, gl::GL_TRUE);
+    gl::glTexImage2DMultisample(gl::GL_TEXTURE_2D_MULTISAMPLE, samples, gl::GL_RGB, width, height, gl::GL_TRUE);
     gl::glBindTexture(gl::GL_TEXTURE_2D_MULTISAMPLE, 0);
 
     gl::glBindRenderbuffer(gl::GL_RENDERBUFFER, rbo);
-    gl::glRenderbufferStorageMultisample(gl::GL_RENDERBUFFER, 8, gl::GL_DEPTH24_STENCIL8, width, height);
+    gl::glRenderbufferStorageMultisample(gl::GL_RENDERBUFFER, samples, gl::GL_DEPTH24_STENCIL8, width, height);
     gl::glBindRenderbuffer(gl::GL_RENDERBUFFER, 0);
 
     gl::glBindTexture(gl::GL_TEXTURE_2D, screenTexture);
