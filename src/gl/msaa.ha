@@ -5,7 +5,7 @@ use libs::gl;
 
 export type msaa_error = !str;
 
-const samples = 8;
+const samples = 4;
 
 let msaa_program = 0u;
 let framebuffer = 0u;

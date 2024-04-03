@@ -26,6 +26,5 @@ fn rect_up(x: f32, y: f32) void = {
 	selected.w = x: f32;
 	selected.h = y: f32;
 
-
 	rect_selected = null;
 };

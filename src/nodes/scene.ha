@@ -25,9 +25,9 @@ export fn new_scene() void = {
 
     active_scene = alloc(scene {
         position    = math::vec2id(0f32),
-        translation = math::vec2id(0f32),
+        translation = math::vec2id(100f32),
         rotation    = math::mat2id(1f32),
-        scale       = math::vec2id(1f32),
+        scale       = math::vec2id(0.5f32),
         w           = width,
         h           = height,
         draw        = &_scene_draw,
@@ -63,10 +63,45 @@ fn scene_init(resources: str) void = {
 };
 
 fn scene_transform() math::mat3 = {
+    const active_scene = active_scene: *scene;
+    return math::mat3mul(
+        math::vec2translation(active_scene.translation), 
+        math::vec2scale(active_scene.scale)
+    );
+};
+
+export fn scene_transform_inv() math::mat3 = {
+    const active_scene = active_scene: *scene;
+
+    return math::mat3mul(
+        math::vec2scale(
+            [1f32 / active_scene.scale[0], 1f32 / active_scene.scale[1]]
+        ),
+        math::vec2translation(
+            math::vec2fmul(-1f32, active_scene.translation)
+        )    
+    );
+};
+
+export fn scene_scale() math::mat3 = {
+    const active_scene = active_scene: *scene;
+
+    return math::vec2scale(
+        [1f32 / active_scene.scale[0], 1f32 / active_scene.scale[1]]
+    );
+};
+
+fn screen_transform() math::mat3 = {
     return math::mat3mul(
         math::vec2translation([-1f32, 1f32]),
         math::vec2scale([2f32/(gl::width: f32), -2f32/(gl::height: f32)])
     );
+};
+
+fn get_size() math::vec2 = {
+    const active_scene = active_scene: *scene;
+
+    return [gl::width: f32 / active_scene.scale[0], gl::height: f32 / active_scene.scale[1]];
 };
 
 fn _scene_draw(this: *node) void = {
@@ -113,4 +148,17 @@ export fn scene_free() void = {
         const active_scene = active_scene as *scene;
         _scene_free(active_scene);
     };
+};
+
+export fn scene_uniforms(program: uint) void = {
+    const transform = scene_transform();
+    const location = gl::glGetUniformLocation(program, c::nulstr("scene_transform\0"): *i8);
+    gl::glUniformMatrix3fv(location, 1, gl::GL_FALSE, &transform[0]: *f32);
+    
+    const transform = screen_transform();
+    const location = gl::glGetUniformLocation(program, c::nulstr("screen_transform\0"): *i8);
+    gl::glUniformMatrix3fv(location, 1, gl::GL_FALSE, &transform[0]: *f32);
+
+    gl::glUniform1f(gl::glGetUniformLocation(ellipse_program, c::nulstr("width\0"): nullable *const i8), gl::width: f32);
+    gl::glUniform1f(gl::glGetUniformLocation(ellipse_program, c::nulstr("height\0"): nullable *const i8), gl::height: f32);
 };

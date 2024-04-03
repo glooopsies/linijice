@@ -6,13 +6,15 @@ layout (location = 0) out vec2 screen_position;
 layout (location = 1) out vec4 out_color;
 
 uniform mat3 scene_transform;
+uniform mat3 screen_transform;
 uniform float height;
 
 void main() {
-    screen_position = vec2(position.x, height - position.y);
+    vec2 pos = (scene_transform * vec3(position.xy, 1.0)).xy;
+    screen_position = vec2(pos.x, height - pos.y);
     out_color = in_color;
 
-    vec2 Position = (scene_transform * vec3(position.xy, 1.0)).xy;
+    vec2 Position = (screen_transform * vec3(pos.xy, 1.0)).xy;
 
     gl_Position = vec4(Position.xy , 0.0, 1.0);
 }
