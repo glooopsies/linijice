@@ -152,3 +152,48 @@ export fn mat3print(v1: mat3) void = {
     fmt::printfln("[{} {} {}]", v1[0][2], v1[1][2], v1[2][2])!;
     fmt::printfln("")!;
 };
+
+
+
+export fn mat3det(m: mat3) f32 = {
+    let det1 = mat2det([[m[1][1], m[1][2]],[m[2][1], m[2][2]]]);
+    let det2 = mat2det([[m[1][0], m[1][2]],[m[2][0], m[2][2]]]);
+    let det3 = mat2det([[m[1][0], m[1][1]],[m[2][0], m[2][1]]]);
+
+    let ret = m[0][0]*det1 - m[0][1]*det2 + m[0][2]*det3;
+    return ret;
+};
+
+@test fn mat3det() void = {
+    const m1: mat3 = [[1f32, 2f32, -1f32], [3f32, 4f32, 0f32], [2f32, 1f32, 2f32]];
+
+    assert(mat3det(m1) == 1f32, "matrix determinant incorrect");
+};
+
+export fn mat3inv(m: mat3) mat3 = {
+    let det = mat3det(m);
+
+    let a = m[0][0];
+    let b = m[0][1];
+    let c = m[0][2];
+    let d = m[1][0];
+    let e = m[1][1];
+    let f = m[1][2];
+    let g = m[2][0];
+    let h = m[2][1];
+    let i = m[2][2];
+
+    let adj: mat3 = [[e*i-f*h, -b*i+c*h, b*f-c*e], 
+                     [-d*i+f*g, a*i-c*g, -a*f+c*d], 
+                     [d*h-e*g, -a*h+b*g, a*e-b*d]];
+
+    let ret: mat3 = mat3fmul(1f32/det, adj);
+    return ret;
+};
+
+@test fn mat3inv() void = {
+    const m1: mat3 = [[1f32, 2f32, -1f32], [3f32, 4f32, 0f32], [2f32, 1f32, 2f32]];
+    const m2: mat3 = [[8f32, -5f32, 4f32], [-6f32, 4f32, -3f32], [-5f32, 3f32, -2f32]];
+
+    assert(mat3eq(mat3inv(m1), m2), "matrix inverse incorrect");
+};

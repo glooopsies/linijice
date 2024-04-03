@@ -163,3 +163,32 @@ export fn mat2print(v1: mat2) void = {
     fmt::printfln("[{} {}]", v1[0][1], v1[1][1])!;
     fmt::printfln("")!;
 };
+
+
+export fn mat2det(m: mat2) f32 = {
+    return m[0][0]* m[1][1] - m[0][1]* m[1][0];
+
+};
+
+@test fn mat2det() void = {
+    const m1: mat2 = [[1f32, 2f32], [3f32, 4f32]];
+
+    assert(mat2det(m1) == -2f32, "matrix determinant incorrect");
+};
+
+export fn mat2inv(m: mat2) mat2 = {
+    let det: f32 = mat2det(m);
+    let ret: mat2 = [[m[1][1], -m[0][1]], [-m[1][0], m[0][0]]];
+    ret = mat2fmul(1f32/det,ret);
+    return ret;
+};
+
+
+@test fn mat2inv() void = {
+    const m1: mat2 = [[1f32, 2f32], [3f32, 4f32]];
+    const m2: mat2 = [[-2f32, 1f32], [1.5f32, -0.5f32]];
+
+    assert(mat2eq(mat2inv(m1), m2), "matrix inverse incorrect");
+};
+
+
