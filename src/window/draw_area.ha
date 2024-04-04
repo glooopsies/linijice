@@ -1,6 +1,7 @@
 use types::c;
 
 use gobject;
+use gdk4;
 use gtk4;
 
 use libs::gl;
@@ -50,6 +51,19 @@ fn drag_end(gesture: *gtk4::GestureDrag, x: f64, y: f64, area: *gtk4::GLArea) vo
 	gtk4::glarea_queue_render(area);
 };
 
+fn scale_begin(gesture: *gtk4::GestureZoom, sequence: *gdk4::EventSequence, area: *gtk4::GLArea) void = {
+	tools::scale_begin();
+};
+
+fn scale_changed(gesture: *gtk4::GestureZoom, scale: f64, area: *gtk4::GLArea) void = {
+	tools::scale_changed(scale: f32);
+	gtk4::glarea_queue_render(area);
+};
+
+fn scale_end(gesture: *gtk4::GestureZoom, sequence: *gdk4::EventSequence, area: *gtk4::GLArea) void = {
+	tools::scale_end();
+};
+
 fn draw_area_init(builder: *gtk4::Builder, res: str) void = {
     resources = res;
 
@@ -60,20 +74,20 @@ fn draw_area_init(builder: *gtk4::Builder, res: str) void = {
 
 	gtk4::glarea_set_required_version(gl_area, 4, 3);
 
-	g::signal_connect(gl_area, 
-        c::nulstr("realize\0"), 
+	g::signal_connect(gl_area,
+        c::nulstr("realize\0"),
         &realize: gobject::Callback, null);
 
-	g::signal_connect(gl_area, 
-        c::nulstr("unrealize\0"), 
+	g::signal_connect(gl_area,
+        c::nulstr("unrealize\0"),
         &unrealize: gobject::Callback, null);
 
-	g::signal_connect(gl_area, 
-        c::nulstr("render\0"), 
+	g::signal_connect(gl_area,
+        c::nulstr("render\0"),
         &render: gobject::Callback, null);
 
-	g::signal_connect(gl_area, 
-        c::nulstr("resize\0"), 
+	g::signal_connect(gl_area,
+        c::nulstr("resize\0"),
         &gl_resize: gobject::Callback, null);
 
 
@@ -81,17 +95,33 @@ fn draw_area_init(builder: *gtk4::Builder, res: str) void = {
 	gtk4::gesture_single_set_button(drag_gesture: *gtk4::GestureSingle, 1);
 	gtk4::widget_add_controller(gl_area, drag_gesture: *gtk4::EventController);
 
-	g::signal_connect(drag_gesture, 
-        c::nulstr("drag-begin\0"), 
+	g::signal_connect(drag_gesture,
+        c::nulstr("drag-begin\0"),
         &drag_begin: gobject::Callback, gl_area);
 
-	g::signal_connect(drag_gesture, 
-        c::nulstr("drag-update\0"), 
+	g::signal_connect(drag_gesture,
+        c::nulstr("drag-update\0"),
         &drag_update: gobject::Callback, gl_area);
 
-	g::signal_connect(drag_gesture, 
-        c::nulstr("drag-end\0"), 
+	g::signal_connect(drag_gesture,
+        c::nulstr("drag-end\0"),
         &drag_end: gobject::Callback, gl_area);
+
+
+	const zoom_gesture = gtk4::gesture_zoom_new();
+	gtk4::widget_add_controller(gl_area, zoom_gesture: *gtk4::EventController);
+
+	g::signal_connect(zoom_gesture,
+        c::nulstr("begin\0"),
+        &scale_begin: gobject::Callback, gl_area);
+
+	g::signal_connect(zoom_gesture,
+        c::nulstr("scale-changed\0"),
+        &scale_changed: gobject::Callback, gl_area);
+
+	g::signal_connect(zoom_gesture,
+        c::nulstr("end\0"),
+        &scale_end: gobject::Callback, gl_area);
 
 	tools::init(builder);
 };

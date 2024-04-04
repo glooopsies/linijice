@@ -19,7 +19,6 @@ fn color_button_init(builder: *gtk4::Builder) void = {
 		c::nulstr("tool_color\0")
 	): *gtk4::ColorDialogButton;
 
-
 	const dialog = gtk4::color_dialog_new();
 	gtk4::color_dialog_set_with_alpha(dialog, glib::TRUE);
 

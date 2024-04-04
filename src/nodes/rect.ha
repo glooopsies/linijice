@@ -63,7 +63,7 @@ fn draw_rect(this: *node) void = {
     gl::glUseProgram(rect_program);
     gl::glBindVertexArray(rect_VAO);
 
-    scene_uniforms(rect_program);
+    scene_set_uniforms(rect_program);
 
     gl::glDrawArrays(gl::GL_LINES, 0, 2);
 };

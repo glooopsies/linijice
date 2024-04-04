@@ -63,7 +63,7 @@ fn draw_ellipse(this: *node) void = {
     gl::glUseProgram(ellipse_program);
     gl::glBindVertexArray(ellipse_VAO);
 
-    scene_uniforms(ellipse_program);
+    scene_set_uniforms(ellipse_program);
 
     gl::glDrawArrays(gl::GL_LINES, 0, 2);
 };

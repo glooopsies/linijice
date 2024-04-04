@@ -98,6 +98,21 @@ export fn vec2add(v1: vec2, v2: vec2) vec2 = {
     assert(vec2eq(vec2add(v1, v2), v3), "vectors addition incorrect");
 };
 
+export fn vec2inv(v1: vec2) vec2 = {
+    for (let coord &.. v1) {
+        *coord = 1f32 / *coord;
+    };
+
+    return v1;
+};
+
+@test fn vec2inv() void = {
+    const v1: vec2 = [4f32, 2f32];
+    const v2: vec2 = [1f32/4f32, 1f32/2f32];
+
+    assert(vec2eq(vec2inv(v1), v2), "vectors inversion incorrect");
+};
+
 export fn vec2translation(v1: vec2) mat3 = {
     let mat = mat3id(1f32);
     mat[2][0] = v1[0];

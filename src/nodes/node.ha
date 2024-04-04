@@ -9,13 +9,12 @@ export type node = struct {
     draw:        *fn(*node) void,
 };
 
-export fn get_transofrm(this: *node) math::mat3 = {
+export fn node_transform(this: *node) math::mat3 = {
     return math::mat3mul(
         math::vec2translation(this.position),
-        math::mat3mul(
-            math::mat2to3(this.rotation),
-            math::vec2scale(this.scale)
-        )
+        math::vec2translation(this.translation),
+        math::mat2to3(this.rotation),
+        math::vec2scale(this.scale)
     );
 };
 

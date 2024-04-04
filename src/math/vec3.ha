@@ -102,6 +102,21 @@ export fn vec3to2(v1: vec3) vec2 = {
     return [v1[0], v1[1]];
 };
 
+export fn vec3inv(v1: vec3) vec3 = {
+    for (let coord &.. v1) {
+        *coord = 1f32 / *coord;
+    };
+
+    return v1;
+};
+
+@test fn vec2inv() void = {
+    const v1: vec3 = [4f32, 2f32, 8f32];
+    const v2: vec3 = [1f32/4f32, 1f32/2f32, 1f32/8f32];
+
+    assert(vec3eq(vec3inv(v1), v2), "vectors inversion incorrect");
+};
+
 @test fn vec3to2() void = {
     const v1: vec3 = [1f32, 2f32, 3f32];
     const v2: vec2 = [1f32, 2f32];

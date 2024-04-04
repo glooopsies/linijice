@@ -9,15 +9,21 @@ use src::math;
 use src::nodes;
 
 type tool = struct {
-    mouse_down: *fn(x: f32, y:f32) void,
-    mouse_move: *fn(x: f32, y:f32) void,
-    mouse_up:   *fn(x: f32, y:f32) void,
+    mouse_down:      *fn(point: math::vec2) void,
+    mouse_move:      *fn(vec: math::vec2)   void,
+    mouse_up:        *fn(vec: math::vec2)   void,
+    transform_point: bool,
+    transform_move:  bool,
 };
 
 const tools = [
     ("tool_rect\0", &rect),
     ("tool_ellipse\0", &ellipse),
+    ("tool_move\0", &move),
 ];
+
+export let color: math::vec4 = [0f32, 0f32, 0f32, 1f32];
+let active_tool = &rect;
 
 fn toggled(button: *gtk4::ToggleButton, data: *opaque) void = {
     const data = data: *tool;
@@ -40,30 +46,42 @@ export fn init(builder: *gtk4::Builder) void = {
     };
 };
 
-export let color: math::vec4 = [0.1f32, 0.1f32, 0.1f32, 1f32];
-
-let active_tool = &rect;
-
 export fn mouse_down(x: f32, y: f32) void = {
-    const v: math::vec3 = [x, y, 1f32];
-    const res = math::vec3to2(
-        math::mat3vec(nodes::scene_transform_inv(), v)
-    ); 
-    active_tool.mouse_down(res[0], res[1]);
+    let vec: math::vec3 = [x, y, 1f32];
+
+    if (active_tool.transform_point) {
+        vec = math::mat3vec(math::mat3inv(nodes::scene_transform()), vec); 
+    };
+
+    active_tool.mouse_down(math::vec3to2(vec));
 };
 
 export fn mouse_move(x: f32, y: f32) void = {
-    const v: math::vec3 = [x, y, 1f32];
-    const res = math::vec3to2(
-        math::mat3vec(nodes::scene_scale(), v)
-    ); 
-    active_tool.mouse_move(res[0], res[1]);
+    let vec: math::vec3 = [x, y, 1f32];
+
+    if (active_tool.transform_move) {
+        vec = math::mat3vec(
+            math::vec2scale(
+                math::vec2inv(nodes::get_scene().scale)
+            ),
+            vec
+        );
+    };
+
+    active_tool.mouse_move(math::vec3to2(vec));
 };
 
 export fn mouse_up(x: f32, y: f32) void = {
-    const v: math::vec3 = [x, y, 1f32];
-    const res = math::vec3to2(
-        math::mat3vec(nodes::scene_scale(), v)
-    ); 
-    active_tool.mouse_up(res[0], res[1]);
+    let vec: math::vec3 = [x, y, 1f32];
+    
+    if (active_tool.transform_move) {
+        vec = math::mat3vec(
+            math::vec2scale(
+                math::vec2inv(nodes::get_scene().scale)
+            ),
+            vec
+        );
+    };
+
+    active_tool.mouse_move(math::vec3to2(vec));
 };

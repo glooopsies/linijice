@@ -3,8 +3,8 @@ using Adw 1;
 
 Adw.ApplicationWindow window {
   title: 'Linijice';
-  width-request: 300;
-  height-request: 400;
+  width-request: 800;
+  height-request: 600;
 
   content: Adw.ToolbarView {
 
@@ -56,6 +56,56 @@ Adw.ApplicationWindow window {
         }
 
         ColorDialogButton tool_color {}
+      }
+
+      [overlay]
+      Box {
+        valign: start;
+        orientation: horizontal;
+        margin-top: 6;
+        halign: center;
+        styles ["background", "toolbar"]
+
+        Button {
+          icon-name: "square-filled";
+          styles ["flat"]
+        }
+
+        Button {
+          icon-name: "square-filled";
+          styles ["flat"]
+        }
+
+        Button {
+          icon-name: "square-filled";
+          styles ["flat"]
+        }
+
+        Button {
+          icon-name: "square-filled";
+          styles ["flat"]
+        }
+
+        Button {
+          icon-name: "square-filled";
+          styles ["flat"]
+        }
+      }
+
+      [overlay]
+      Box {
+        valign: fill;
+        orientation: vertical;
+        margin-top: 6;
+        margin-bottom: 6;
+        margin-end: 6;
+        halign: end;
+        styles ["background", "toolbar"]
+
+        Button {
+          icon-name: "square-filled";
+          styles ["flat"]
+        }
       }
     };
   };

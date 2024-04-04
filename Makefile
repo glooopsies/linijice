@@ -42,4 +42,4 @@ flatpak-run: flatpak
 	flatpak run rs.ac.bg.matf.linijice
 
 clean:
-	rm -rf build .flatpak .flatpak-builder
+	rm -rf build .flatpak .flatpak-build .flatpak-builder

@@ -13,9 +13,17 @@ export type scene = struct {
     layers: []layer,
 };
 
-const background: math::vec4 = [0.1, 0.1, 0.1, 1.0];
-
 let active_scene: nullable *scene = null;
+
+fn scene_init(resources: str) void = {
+    gl::glEnable(gl::GL_BLEND);
+    gl::glBlendFunc(gl::GL_SRC_ALPHA, gl::GL_ONE_MINUS_SRC_ALPHA);
+
+    match (gl::msaa_init(resources)) {
+	case void => yield;
+    case let err: gl::error => gl::check_error(err);
+    };
+};
 
 export fn new_scene() void = {
     scene_free();
@@ -25,19 +33,19 @@ export fn new_scene() void = {
 
     active_scene = alloc(scene {
         position    = math::vec2id(0f32),
-        translation = math::vec2id(100f32),
+        translation = math::vec2id(0f32),
         rotation    = math::mat2id(1f32),
-        scale       = math::vec2id(0.5f32),
+        scale       = math::vec2id(1f32),
         w           = width,
         h           = height,
         draw        = &_scene_draw,
 
         paper = make_rect([0f32, 0f32], width, height, [1f32, 1f32, 1f32, 1f32]),
-        layers = alloc([
-            alloc([make_ellipse([100f32, 100f32], 0f32, 0f32, [0f32, 0.6f32, 0.6f32, 0.5f32])])
-        ]),
+        layers = alloc([[]]),
     });
 };
+
+export fn get_scene() *scene = active_scene: *scene;
 
 export fn scene_resize() void = {
     gl::msaa_resize();
@@ -45,57 +53,29 @@ export fn scene_resize() void = {
 
 export fn scene_append(node: *node) void = {
     if (active_scene == null) { return; };
-    let active_scene = active_scene: *scene;
+    const active_scene = active_scene: *scene;
 
     const layer = len(active_scene.layers) - 1;
     append(active_scene.layers[layer], node);
 };
 
-fn scene_init(resources: str) void = {
-    gl::glEnable(gl::GL_BLEND);
-    gl::glBlendFunc(gl::GL_SRC_ALPHA, gl::GL_ONE_MINUS_SRC_ALPHA);
-
-    match (gl::msaa_init(resources)) {
-	case void => yield;
-    case let err: gl::error =>
-        gl::check_error(err);
-    };
-};
-
-fn scene_transform() math::mat3 = {
-    const active_scene = active_scene: *scene;
-    return math::mat3mul(
-        math::vec2translation(active_scene.translation), 
-        math::vec2scale(active_scene.scale)
-    );
-};
-
-export fn scene_transform_inv() math::mat3 = {
+export fn scene_transform() math::mat3 = {
     const active_scene = active_scene: *scene;
 
-    return math::mat3mul(
-        math::vec2scale(
-            [1f32 / active_scene.scale[0], 1f32 / active_scene.scale[1]]
-        ),
-        math::vec2translation(
-            math::vec2fmul(-1f32, active_scene.translation)
-        )    
-    );
+    return node_transform(active_scene);
 };
 
-export fn scene_scale() math::mat3 = {
-    const active_scene = active_scene: *scene;
+export fn scene_set_uniforms(program: uint) void = {
+    const transform = scene_transform();
+    const location = gl::glGetUniformLocation(program, c::nulstr("scene_transform\0"): *i8);
+    gl::glUniformMatrix3fv(location, 1, gl::GL_FALSE, &transform[0]: *f32);
+    
+    const transform = gl::screen_transform();
+    const location = gl::glGetUniformLocation(program, c::nulstr("screen_transform\0"): *i8);
+    gl::glUniformMatrix3fv(location, 1, gl::GL_FALSE, &transform[0]: *f32);
 
-    return math::vec2scale(
-        [1f32 / active_scene.scale[0], 1f32 / active_scene.scale[1]]
-    );
-};
-
-fn screen_transform() math::mat3 = {
-    return math::mat3mul(
-        math::vec2translation([-1f32, 1f32]),
-        math::vec2scale([2f32/(gl::width: f32), -2f32/(gl::height: f32)])
-    );
+    gl::glUniform1f(gl::glGetUniformLocation(ellipse_program, c::nulstr("width\0"): nullable *const i8), gl::width: f32);
+    gl::glUniform1f(gl::glGetUniformLocation(ellipse_program, c::nulstr("height\0"): nullable *const i8), gl::height: f32);
 };
 
 fn get_size() math::vec2 = {
@@ -108,7 +88,7 @@ fn _scene_draw(this: *node) void = {
     const this = this: *scene;
     gl::msaa_start();
 
-    gl::glClearColor(background[0], background[1], background[2], background[3]);
+    gl::glClearColor(gl::background[0], gl::background[1], gl::background[2], gl::background[3]);
     gl::glClear(gl::GL_COLOR_BUFFER_BIT | gl::GL_DEPTH_BUFFER_BIT);
     // gl::glEnable(gl::GL_DEPTH_TEST);
 
@@ -127,7 +107,7 @@ export fn scene_draw() void = {
         return;
     };
 
-    _scene_draw(active_scene as *scene);
+    _scene_draw(active_scene: *scene);
 };
 
 fn _scene_free(scene: *scene) void = {
@@ -145,20 +125,7 @@ fn _scene_free(scene: *scene) void = {
 
 export fn scene_free() void = {
     if (active_scene != null) {
-        const active_scene = active_scene as *scene;
+        const active_scene = active_scene: *scene;
         _scene_free(active_scene);
     };
-};
-
-export fn scene_uniforms(program: uint) void = {
-    const transform = scene_transform();
-    const location = gl::glGetUniformLocation(program, c::nulstr("scene_transform\0"): *i8);
-    gl::glUniformMatrix3fv(location, 1, gl::GL_FALSE, &transform[0]: *f32);
-    
-    const transform = screen_transform();
-    const location = gl::glGetUniformLocation(program, c::nulstr("screen_transform\0"): *i8);
-    gl::glUniformMatrix3fv(location, 1, gl::GL_FALSE, &transform[0]: *f32);
-
-    gl::glUniform1f(gl::glGetUniformLocation(ellipse_program, c::nulstr("width\0"): nullable *const i8), gl::width: f32);
-    gl::glUniform1f(gl::glGetUniformLocation(ellipse_program, c::nulstr("height\0"): nullable *const i8), gl::height: f32);
 };
