@@ -46,18 +46,18 @@ export fn init(builder: *gtk4::Builder) void = {
     };
 };
 
-export fn mouse_down(x: f32, y: f32) void = {
-    let vec: math::vec3 = [x, y, 1f32];
+export fn mouse_down(point: math::vec2) void = {
+    let vec: math::vec3 = math::vec2to3(point);
 
     if (active_tool.transform_point) {
-        vec = math::mat3vec(math::mat3inv(nodes::scene_transform()), vec); 
+        vec = math::mat3vec(math::mat3inv(nodes::scene_transform()), vec);
     };
 
     active_tool.mouse_down(math::vec3to2(vec));
 };
 
-export fn mouse_move(x: f32, y: f32) void = {
-    let vec: math::vec3 = [x, y, 1f32];
+export fn mouse_move(vec: math::vec2) void = {
+    let vec: math::vec3 = math::vec2to3(vec);
 
     if (active_tool.transform_move) {
         vec = math::mat3vec(
@@ -71,9 +71,9 @@ export fn mouse_move(x: f32, y: f32) void = {
     active_tool.mouse_move(math::vec3to2(vec));
 };
 
-export fn mouse_up(x: f32, y: f32) void = {
-    let vec: math::vec3 = [x, y, 1f32];
-    
+export fn mouse_up(vec: math::vec2) void = {
+    let vec: math::vec3 = math::vec2to3(vec);
+
     if (active_tool.transform_move) {
         vec = math::mat3vec(
             math::vec2scale(

@@ -1,3 +1,5 @@
+use fmt;
+
 use types::c;
 
 use gobject;
@@ -37,31 +39,51 @@ fn gl_resize(widget: *gtk4::GLArea, w: int, h: int, data: *opaque) void = {
 };
 
 fn drag_begin(gesture: *gtk4::GestureDrag, x: f64, y: f64, area: *gtk4::GLArea) void = {
-	tools::mouse_down(x: f32, y: f32);
+	tools::mouse_down([x: f32, y: f32]);
 	gtk4::glarea_queue_render(area);
 };
 
 fn drag_update(gesture: *gtk4::GestureDrag, x: f64, y: f64, area: *gtk4::GLArea) void = {
-	tools::mouse_move(x: f32, y: f32);
+	tools::mouse_move([x: f32, y: f32]);
 	gtk4::glarea_queue_render(area);
 };
 
 fn drag_end(gesture: *gtk4::GestureDrag, x: f64, y: f64, area: *gtk4::GLArea) void = {
-	tools::mouse_up(x: f32, y: f32);
+	tools::mouse_up([x: f32, y: f32]);
 	gtk4::glarea_queue_render(area);
 };
 
-fn scale_begin(gesture: *gtk4::GestureZoom, sequence: *gdk4::EventSequence, area: *gtk4::GLArea) void = {
-	tools::scale_begin();
-};
+fn scroll(gesture: *gtk4::EventControllerScroll, x: f64, y: f64, area: *gtk4::GLArea) void = {
+	if (gtk4::event_controller_scroll_get_unit(gesture) == gdk4::ScrollUnit::WHEEL) {
+		const state = gtk4::event_controller_get_current_event_state(gesture: *gtk4::EventController);
 
-fn scale_changed(gesture: *gtk4::GestureZoom, scale: f64, area: *gtk4::GLArea) void = {
-	tools::scale_changed(scale: f32);
+		if (state & gdk4::ModifierType::SHIFT_MASK > 0) {
+			tools::scroll_wheel([y: f32, x: f32]);
+		} else {
+			tools::scroll_wheel([x: f32, y: f32]);
+		};
+	} else {
+		tools::scroll_discrete([x: f32, y: f32]);
+	};
 	gtk4::glarea_queue_render(area);
 };
 
-fn scale_end(gesture: *gtk4::GestureZoom, sequence: *gdk4::EventSequence, area: *gtk4::GLArea) void = {
-	tools::scale_end();
+fn zoom_begin(gesture: *gtk4::GestureZoom, sequence: *gdk4::EventSequence, area: *gtk4::GLArea) void = {
+	let x = 0f64, y = 0f64;
+	gtk4::gesture_get_point(gesture: *gtk4::Gesture, sequence, &x, &y);
+
+	tools::zoom_begin([x: f32, y: f32]);
+	gtk4::glarea_queue_render(area);
+};
+
+fn zoom_changed(gesture: *gtk4::GestureZoom, scale: f64, area: *gtk4::GLArea) void = {
+	tools::zoom_changed(scale: f32);
+	gtk4::glarea_queue_render(area);
+};
+
+fn zoom_end(gesture: *gtk4::GestureZoom, sequence: *gdk4::EventSequence, area: *gtk4::GLArea) void = {
+	tools::zoom_end();
+	gtk4::glarea_queue_render(area);
 };
 
 fn draw_area_init(builder: *gtk4::Builder, res: str) void = {
@@ -108,20 +130,30 @@ fn draw_area_init(builder: *gtk4::Builder, res: str) void = {
         &drag_end: gobject::Callback, gl_area);
 
 
+	const scroll_event = gtk4::event_controller_scroll_new(
+		gtk4::EventControllerScrollFlags::BOTH_AXES
+	);
+	gtk4::widget_add_controller(gl_area, scroll_event: *gtk4::EventController);
+
+	g::signal_connect(scroll_event,
+        c::nulstr("scroll\0"),
+        &scroll: gobject::Callback, gl_area);
+
+
 	const zoom_gesture = gtk4::gesture_zoom_new();
 	gtk4::widget_add_controller(gl_area, zoom_gesture: *gtk4::EventController);
 
 	g::signal_connect(zoom_gesture,
         c::nulstr("begin\0"),
-        &scale_begin: gobject::Callback, gl_area);
+        &zoom_begin: gobject::Callback, gl_area);
 
 	g::signal_connect(zoom_gesture,
         c::nulstr("scale-changed\0"),
-        &scale_changed: gobject::Callback, gl_area);
+        &zoom_changed: gobject::Callback, gl_area);
 
 	g::signal_connect(zoom_gesture,
         c::nulstr("end\0"),
-        &scale_end: gobject::Callback, gl_area);
+        &zoom_end: gobject::Callback, gl_area);
 
 	tools::init(builder);
 };

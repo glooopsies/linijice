@@ -98,10 +98,6 @@ export fn vec3add(v1: vec3, v2: vec3) vec3 = {
     assert(vec3eq(vec3add(v1, v2), v3), "vectors addition incorrect");
 };
 
-export fn vec3to2(v1: vec3) vec2 = {
-    return [v1[0], v1[1]];
-};
-
 export fn vec3inv(v1: vec3) vec3 = {
     for (let coord &.. v1) {
         *coord = 1f32 / *coord;
@@ -117,11 +113,15 @@ export fn vec3inv(v1: vec3) vec3 = {
     assert(vec3eq(vec3inv(v1), v2), "vectors inversion incorrect");
 };
 
+export fn vec3to2(v1: vec3) vec2 = {
+    return [v1[0], v1[1]];
+};
+
 @test fn vec3to2() void = {
     const v1: vec3 = [1f32, 2f32, 3f32];
     const v2: vec2 = [1f32, 2f32];
 
-    assert(vec2eq(vec3to2(v1), v2), "vectors 3 to vector 2 conversion incorrect");
+    assert(vec2eq(vec3to2(v1), v2), "vec3 to vec2 conversion incorrect");
 };
 
 export fn vec3print(v1: vec3) void = {

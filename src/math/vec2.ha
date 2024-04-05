@@ -143,6 +143,17 @@ export fn vec2scale(v1: vec2) mat3 = {
     assert(mat3eq(vec2scale(v1), m1), "scale matrix incorrect");
 };
 
+export fn vec2to3(v1: vec2) vec3 = {
+    return [v1[0], v1[1], 1f32];
+};
+
+@test fn vec3to2() void = {
+    const v1: vec2 = [1f32, 2f32];
+    const v2: vec3 = [1f32, 2f32, 1f32];
+
+    assert(vec3eq(vec2to3(v1), v2), "vec2 to vec3 conversion incorrect");
+};
+
 export fn vec2print(v1: vec2) void = {
     fmt::printfln("({}, {})", v1[0], v1[1])!;
 };
