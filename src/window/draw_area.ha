@@ -12,8 +12,10 @@ use src::g;
 use src::gl;
 use src::nodes;
 use src::tools;
+use src::math;
 
 let resources: str = "";
+let pointer: math::vec2 = [0f32, 0f32];
 
 fn realize(area: *gtk4::GLArea) void = {
 	gtk4::glarea_make_current(area);
@@ -38,34 +40,70 @@ fn gl_resize(widget: *gtk4::GLArea, w: int, h: int, data: *opaque) void = {
 	nodes::scene_resize();
 };
 
+fn motion(gesture: *gtk4::EventControllerMotion, x: f64, y: f64, area: *gtk4::GLArea) void = {
+	pointer = [x: f32, y: f32];
+};
+
 fn drag_begin(gesture: *gtk4::GestureDrag, x: f64, y: f64, area: *gtk4::GLArea) void = {
+	defer gtk4::glarea_queue_render(area);
+
+	const state = gtk4::event_controller_get_current_event_state(gesture: *gtk4::EventController);
+
+	if (state & gdk4::ModifierType::CONTROL_MASK > 0) {
+		tools::move_down([x: f32, y: f32]);
+		return;
+	};
+
 	tools::mouse_down([x: f32, y: f32]);
-	gtk4::glarea_queue_render(area);
 };
 
 fn drag_update(gesture: *gtk4::GestureDrag, x: f64, y: f64, area: *gtk4::GLArea) void = {
+	defer gtk4::glarea_queue_render(area);
+
+	const state = gtk4::event_controller_get_current_event_state(gesture: *gtk4::EventController);
+	if (state & gdk4::ModifierType::CONTROL_MASK > 0) {
+		tools::move_move([x: f32, y: f32]);
+		return;
+	};
+
 	tools::mouse_move([x: f32, y: f32]);
-	gtk4::glarea_queue_render(area);
 };
 
 fn drag_end(gesture: *gtk4::GestureDrag, x: f64, y: f64, area: *gtk4::GLArea) void = {
+	defer gtk4::glarea_queue_render(area);
+
+	const state = gtk4::event_controller_get_current_event_state(gesture: *gtk4::EventController);
+	if (state & gdk4::ModifierType::CONTROL_MASK > 0) {
+		tools::move_up([x: f32, y: f32]);
+		return;
+	};
+
 	tools::mouse_up([x: f32, y: f32]);
-	gtk4::glarea_queue_render(area);
 };
 
 fn scroll(gesture: *gtk4::EventControllerScroll, x: f64, y: f64, area: *gtk4::GLArea) void = {
+	defer gtk4::glarea_queue_render(area);
+
 	if (gtk4::event_controller_scroll_get_unit(gesture) == gdk4::ScrollUnit::WHEEL) {
 		const state = gtk4::event_controller_get_current_event_state(gesture: *gtk4::EventController);
+		if (state & gdk4::ModifierType::CONTROL_MASK > 0) {
+			tools::zoom_begin(pointer);
+
+			const scale = 1f32 + (y: f32 / 5f32);
+			tools::zoom_changed(scale);
+			return;
+		};
 
 		if (state & gdk4::ModifierType::SHIFT_MASK > 0) {
 			tools::scroll_wheel([y: f32, x: f32]);
-		} else {
-			tools::scroll_wheel([x: f32, y: f32]);
+			return;
 		};
-	} else {
-		tools::scroll_discrete([x: f32, y: f32]);
+
+		tools::scroll_wheel([x: f32, y: f32]);
+		return;
 	};
-	gtk4::glarea_queue_render(area);
+
+	tools::scroll_discrete([x: f32, y: f32]);
 };
 
 fn zoom_begin(gesture: *gtk4::GestureZoom, sequence: *gdk4::EventSequence, area: *gtk4::GLArea) void = {
@@ -111,6 +149,14 @@ fn draw_area_init(builder: *gtk4::Builder, res: str) void = {
 	g::signal_connect(gl_area,
         c::nulstr("resize\0"),
         &gl_resize: gobject::Callback, null);
+
+
+	const motion_event = gtk4::event_controller_motion_new();
+	gtk4::widget_add_controller(gl_area, motion_event: *gtk4::EventController);
+
+	g::signal_connect(motion_event,
+        c::nulstr("motion\0"),
+        &motion: gobject::Callback, gl_area);
 
 
 	const drag_gesture = gtk4::gesture_drag_new();

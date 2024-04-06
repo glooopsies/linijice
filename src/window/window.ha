@@ -10,6 +10,8 @@ use gtk4;
 
 use src::g;
 
+let window: nullable *gtk4::Window = null;
+
 fn resources_init(resources: str) (void|errors::invalid) = {
 	const gresources = strings::concat(resources, "/data.gresource\0");
 	defer free(gresources);
@@ -52,11 +54,11 @@ export fn init(app: *adw::Application, resources: str) void = {
     draw_area_init(builder, resources);
 	color_button_init(builder);
 
-	const window = gtk4::builder_get_object(
+	window = gtk4::builder_get_object(
         builder, 
         c::nulstr("window\0")
     ): *gtk4::Window;
 
-	gtk4::window_set_application(window, app);
+	gtk4::window_set_application(window: *gtk4::Window, app);
 	gtk4::widget_show(window);
 };
