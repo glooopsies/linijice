@@ -3,6 +3,7 @@ use fmt;
 use types::c;
 
 use gobject;
+use glib;
 use gdk4;
 use gtk4;
 
@@ -42,6 +43,15 @@ fn gl_resize(widget: *gtk4::GLArea, w: int, h: int, data: *opaque) void = {
 
 fn motion(gesture: *gtk4::EventControllerMotion, x: f64, y: f64, area: *gtk4::GLArea) void = {
 	pointer = [x: f32, y: f32];
+};
+
+fn key_pressed(gesture: *gtk4::EventControllerKey, keyval: uint, keycode: uint, state: gdk4::ModifierType, area: *gtk4::GLArea) glib::boolean = {
+	fmt::printfln("key: {}", keyval)!;
+	if (keyval == g::KEY_Delete) {
+		tools::delete_selection();
+	};
+
+	return glib::TRUE;
 };
 
 fn drag_begin(gesture: *gtk4::GestureDrag, x: f64, y: f64, area: *gtk4::GLArea) void = {
@@ -157,6 +167,14 @@ fn draw_area_init(builder: *gtk4::Builder, res: str) void = {
 	g::signal_connect(motion_event,
         c::nulstr("motion\0"),
         &motion: gobject::Callback, gl_area);
+
+
+	const key_event = gtk4::event_controller_key_new();
+	gtk4::widget_add_controller(gl_area, key_event: *gtk4::EventController);
+
+	g::signal_connect(key_event,
+        c::nulstr("key-released\0"),
+        &key_pressed: gobject::Callback, gl_area);
 
 
 	const drag_gesture = gtk4::gesture_drag_new();

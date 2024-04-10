@@ -2,11 +2,14 @@ use src::gl;
 use src::math;
 
 export type node = struct {
-    position:    math::vec2,
-    translation: math::vec2,
-    rotation:    math::mat2,
-    scale:       math::vec2,
-    draw:        *fn(*node) void,
+    position:     math::vec2,
+    translation:  math::vec2,
+    rotation:     math::mat2,
+    scale:        math::vec2,
+    draw:         *fn(*node) void,
+    selected:     bool,
+    bounding_box: *fn(*node) [2]math::vec2,
+    intersects:   *fn(*node, [2]math::vec2) bool,
 };
 
 export fn node_transform(this: *node) math::mat3 = {

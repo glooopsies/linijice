@@ -9,7 +9,8 @@ export type scene = struct {
     node,
     w: f32,
     h: f32,
-    paper: *node,
+    paper: *rect,
+    selection: nullable *rect,
     layers: []layer,
 };
 
@@ -25,6 +26,10 @@ fn scene_init(resources: str) void = {
     };
 };
 
+fn scene_bounding_box(this: *node) [2]math::vec2 = 
+    [[0f32, 0f32], [0f32, 0f32]];
+fn scene_intersects(this: *node, other: [2]math::vec2) bool = false;
+
 export fn new_scene() void = {
     scene_free();
 
@@ -32,16 +37,20 @@ export fn new_scene() void = {
     const height = 877f32;
 
     active_scene = alloc(scene {
-        position    = math::vec2id(0f32),
-        translation = math::vec2id(0f32),
-        rotation    = math::mat2id(1f32),
-        scale       = math::vec2id(1f32),
-        w           = width,
-        h           = height,
-        draw        = &_scene_draw,
+        position     = math::vec2id(0f32),
+        translation  = math::vec2id(0f32),
+        rotation     = math::mat2id(1f32),
+        scale        = math::vec2id(1f32),
+        w            = width,
+        h            = height,
+        draw         = &_scene_draw,
+        selected     = false,
+        bounding_box = &scene_bounding_box,
+        intersects   = &scene_intersects,
 
-        paper = make_rect([0f32, 0f32], width, height, [1f32, 1f32, 1f32, 1f32]),
-        layers = alloc([[]]),
+        paper     = make_rect([0f32, 0f32], width, height, [1f32, 1f32, 1f32, 1f32]),
+        selection = null,
+        layers    = alloc([[]]),
     });
 };
 
@@ -97,6 +106,10 @@ fn _scene_draw(this: *node) void = {
         for (let node .. layer) {
             node.draw(node);
         };
+    };
+    if (this.selection != null) {
+        const selection = this.selection: *rect;
+        selection.draw(selection);
     };
 
     gl::msaa_end();

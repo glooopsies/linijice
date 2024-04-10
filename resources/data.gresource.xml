@@ -6,7 +6,7 @@
     <file alias="move-tool-symbolic.svg">icons/move-tool-symbolic.svg</file>
     <file alias="paintbrush-symbolic.svg">icons/paintbrush-symbolic.svg</file>
     <file alias="square-filled-symbolic.svg">icons/square-filled-symbolic.svg</file>
-    <file alias="edit-select-all-symbolic.svg">icons/edit-select-all-symbolic.svg</file>
+    <file alias="select-icon-symbolic.svg">icons/select-icon-symbolic.svg</file>
   </gresource>
   <gresource prefix="/rs/ac/bg/matf/linijice">
     <file>style.css</file>

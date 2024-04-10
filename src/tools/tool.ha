@@ -20,6 +20,7 @@ const tools = [
     ("tool_rect\0", &rect),
     ("tool_ellipse\0", &ellipse),
     ("tool_move\0", &move),
+    ("tool_select\0", &select),
 ];
 
 export let color: math::vec4 = [0f32, 0f32, 0f32, 1f32];
@@ -83,5 +84,5 @@ export fn mouse_up(vec: math::vec2) void = {
         );
     };
 
-    active_tool.mouse_move(math::vec3to2(vec));
+    active_tool.mouse_up(math::vec3to2(vec));
 };
