@@ -12,6 +12,8 @@ const ellipse = tool {
 let ellipse_selected: nullable *nodes::ellipse = null;
 
 fn ellipse_down(point: math::vec2) void = {
+	deselect();
+
 	ellipse_selected = nodes::make_ellipse(point, 1f32, 1f32, color);
 	nodes::scene_append(ellipse_selected);
 };

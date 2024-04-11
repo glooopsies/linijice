@@ -12,8 +12,9 @@ const rect = tool {
 let rect_selected: nullable *nodes::rect = null;
 
 fn rect_down(point: math::vec2) void = {
-	rect_selected = nodes::make_rect(point, 1f32, 1f32, color);
+	deselect();
 
+	rect_selected = nodes::make_rect(point, 1f32, 1f32, color);
 	nodes::scene_append(rect_selected);
 };
 

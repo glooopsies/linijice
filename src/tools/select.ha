@@ -1,8 +1,6 @@
 use src::math;
 use src::nodes;
 
-use fmt;
-
 const select = tool {
     mouse_down      = &select_down,
     mouse_move      = &select_move,
@@ -15,11 +13,15 @@ const selection_color: math::vec4 = [0f32, 0.5f32, 0.5f32, 0.3f32];
 
 let selected: []*nodes::node = [];
 
+fn deselect() void = {
+    for (len(selected) > 0) {
+        selected[0].selected = false;
+        delete(selected[0]);
+    };
+};
+
 fn select_down(point: math::vec2) void = {
-    for (let i = 0z; i < len(selected); i += 1) {
-        selected[i].selected = false;
-        delete(selected[i]);
-    };  
+    deselect();
 
     nodes::get_scene().selection = 
         nodes::make_rect(point, 1f32, 1f32, selection_color);
@@ -56,5 +58,19 @@ fn select_up(vec: math::vec2) void = {
 };
 
 export fn delete_selection() void = {
-    fmt::println("usao")!;
+    let scene = nodes::get_scene();
+
+    for (len(selected) > 0) {
+        for (let i = 0z; i < len(scene.layers); i += 1) {
+            for (let j = 0z; j < len(scene.layers[i]); j += 1) {
+                if (scene.layers[i][j] == selected[0]) {
+                    delete(scene.layers[i][j]);
+                    j -= 1;
+                };
+            };
+        };
+
+        free(selected[0]);
+        delete(selected[0]);
+    };
 };

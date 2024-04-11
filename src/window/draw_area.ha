@@ -1,5 +1,3 @@
-use fmt;
-
 use types::c;
 
 use gobject;
@@ -46,7 +44,8 @@ fn motion(gesture: *gtk4::EventControllerMotion, x: f64, y: f64, area: *gtk4::GL
 };
 
 fn key_pressed(gesture: *gtk4::EventControllerKey, keyval: uint, keycode: uint, state: gdk4::ModifierType, area: *gtk4::GLArea) glib::boolean = {
-	fmt::printfln("key: {}", keyval)!;
+	defer gtk4::glarea_queue_render(area);
+
 	if (keyval == g::KEY_Delete) {
 		tools::delete_selection();
 	};
@@ -56,6 +55,8 @@ fn key_pressed(gesture: *gtk4::EventControllerKey, keyval: uint, keycode: uint, 
 
 fn drag_begin(gesture: *gtk4::GestureDrag, x: f64, y: f64, area: *gtk4::GLArea) void = {
 	defer gtk4::glarea_queue_render(area);
+
+	gtk4::widget_grab_focus(area);
 
 	const state = gtk4::event_controller_get_current_event_state(gesture: *gtk4::EventController);
 
@@ -162,7 +163,7 @@ fn draw_area_init(builder: *gtk4::Builder, res: str) void = {
 
 
 	const motion_event = gtk4::event_controller_motion_new();
-	gtk4::widget_add_controller(gl_area, motion_event: *gtk4::EventController);
+	gtk4::widget_add_controller(gl_area, motion_event);
 
 	g::signal_connect(motion_event,
         c::nulstr("motion\0"),
@@ -170,10 +171,10 @@ fn draw_area_init(builder: *gtk4::Builder, res: str) void = {
 
 
 	const key_event = gtk4::event_controller_key_new();
-	gtk4::widget_add_controller(gl_area, key_event: *gtk4::EventController);
+	gtk4::widget_add_controller(gl_area, key_event);
 
 	g::signal_connect(key_event,
-        c::nulstr("key-released\0"),
+        c::nulstr("key-pressed\0"),
         &key_pressed: gobject::Callback, gl_area);
 
 
@@ -197,7 +198,7 @@ fn draw_area_init(builder: *gtk4::Builder, res: str) void = {
 	const scroll_event = gtk4::event_controller_scroll_new(
 		gtk4::EventControllerScrollFlags::BOTH_AXES
 	);
-	gtk4::widget_add_controller(gl_area, scroll_event: *gtk4::EventController);
+	gtk4::widget_add_controller(gl_area, scroll_event);
 
 	g::signal_connect(scroll_event,
         c::nulstr("scroll\0"),

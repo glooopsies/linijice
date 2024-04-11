@@ -19,4 +19,4 @@ export fn signal_connect(
 };
 
 export const GTK_STYLE_PROVIDER_PRIORITY_USER = 800u;
-export const KEY_Delete = 0xffffu64;
+export const KEY_Delete = 0xffffu;

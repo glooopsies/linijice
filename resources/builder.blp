@@ -21,7 +21,9 @@ Adw.ApplicationWindow window {
     }
 
     content: Overlay {
-      GLArea gl_area {}
+      GLArea gl_area {
+        focusable: true;
+      }
 
       [overlay]
       Box {
