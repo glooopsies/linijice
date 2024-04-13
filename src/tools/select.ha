@@ -35,6 +35,28 @@ fn select_move(vec: math::vec2) void = {
 	selection.h = vec[1];
 };
 
+fn get_box_coords(b: [2]math::vec2) [2]math::vec2 = {
+    if (b[0][0] < b[1][0] && b[0][1] > b[1][1]) {
+        return [
+            [b[0][0], b[1][1]], 
+            [b[1][0], b[0][1]]
+        ];
+    }
+    else if (b[0][0] > b[1][0] && b[0][1] > b[1][1]) {
+        return [
+            [b[1][0], b[1][1]], 
+            [b[0][0], b[0][1]]
+        ];
+    }
+    else if (b[0][0] > b[1][0] && b[0][1] < b[1][1]) {
+        return [
+            [b[1][0], b[0][1]], 
+            [b[0][0], b[1][1]]
+        ];
+    };
+    return b;
+};
+
 fn select_up(vec: math::vec2) void = {
     let scene = nodes::get_scene();
     defer free(scene.selection);
@@ -42,10 +64,12 @@ fn select_up(vec: math::vec2) void = {
 
     let selection = scene.selection: *nodes::rect;
 
-    const box = [
-        [selection.position[0], selection.position[1]]: math::vec2,
-        [selection.position[0] + selection.w, selection.position[1] + selection.h]: math::vec2,
-    ];
+    const box = get_box_coords(
+        [
+            [selection.position[0], selection.position[1]]: math::vec2,
+            [selection.position[0] + selection.w, selection.position[1] + selection.h]: math::vec2,
+        ]
+    );
 
     for (let layer &.. scene.layers) {
         for (let node .. layer) {
