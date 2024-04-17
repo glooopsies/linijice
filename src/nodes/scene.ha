@@ -38,6 +38,8 @@ export fn new_scene() void = {
     const height = 877f32;
 
     active_scene = alloc(scene {
+        _type        = node_type::SCENE,
+        color        = math::vec4id(0f32),
         position     = math::vec2id(0f32),
         translation  = math::vec2id(0f32),
         rotation     = math::mat2id(1f32),

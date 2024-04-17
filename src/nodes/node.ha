@@ -1,7 +1,13 @@
 use src::gl;
 use src::math;
 
+export type node_type = enum {
+    RECT, ELLIPSE, SCENE
+};
+
 export type node = struct {
+    _type:        node_type,
+    color:        math::vec4,
     position:     math::vec2,
     translation:  math::vec2,
     rotation:     math::mat2,

@@ -8,7 +8,6 @@ use libs::gl;
 
 export type rect = struct {
     node,
-    color: math::vec4,
     w: f32,
     h: f32,
     radius: f32,
@@ -24,6 +23,8 @@ export fn make_rect(
     radius: f32 = 0f32,
 ) *rect = {
     return alloc(rect {
+        _type        = node_type::RECT,
+        color        = color,
         position     = position,
         translation  = math::vec2id(0f32),
         rotation     = math::mat2id(1f32),
@@ -32,7 +33,6 @@ export fn make_rect(
         intersects   = &rect_intersects,
         draw         = &draw_rect,
 
-        color  = color,
         w      = w,
         h      = h,
         radius = radius,

@@ -15,6 +15,7 @@ use src::math;
 
 let resources: str = "";
 let pointer: math::vec2 = [0f32, 0f32];
+let area: nullable *gtk4::GLArea = null;
 
 fn realize(area: *gtk4::GLArea) void = {
 	gtk4::glarea_make_current(area);
@@ -30,6 +31,10 @@ fn unrealize(area: *gtk4::GLArea) void = {
 fn render(area: *gtk4::GLArea, context: *opaque) bool = {
 	nodes::scene_draw();
 	return false;
+};
+
+fn rerender() void = {
+	gtk4::glarea_queue_render(area: *gtk4::GLArea);
 };
 
 fn gl_resize(widget: *gtk4::GLArea, w: int, h: int, data: *opaque) void = {
@@ -142,6 +147,7 @@ fn draw_area_init(builder: *gtk4::Builder, res: str) void = {
         builder, 
         c::nulstr("gl_area\0")
     ): *gtk4::GLArea;
+	area = gl_area;
 
 	gtk4::glarea_set_required_version(gl_area, 4, 3);
 

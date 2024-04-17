@@ -8,7 +8,6 @@ use libs::gl;
 
 export type ellipse = struct {
     node,
-    color: math::vec4,
     r1: f32,
     r2: f32,
 };
@@ -22,6 +21,8 @@ export fn make_ellipse(
     color: math::vec4
 ) *ellipse = {
     return alloc(ellipse {
+        _type        = node_type::ELLIPSE,
+        color        = color,
         position     = position,
         translation  = math::vec2id(0f32),
         rotation     = math::mat2id(1f32),
@@ -30,7 +31,6 @@ export fn make_ellipse(
         intersects   = &ellipse_intersects,
         draw         = &draw_ellipse,
 
-        color  = color,
         r1     = r1,
         r2     = r2,
     });
