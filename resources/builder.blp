@@ -62,8 +62,6 @@ Adw.ApplicationWindow window {
           group: tool_rect;
           styles ["flat"]
         }
-
-        ColorDialogButton tool_color {}
       }
 
       [overlay]
@@ -74,29 +72,38 @@ Adw.ApplicationWindow window {
         halign: center;
         styles ["background", "toolbar"]
 
-        Button {
+        Image {
           icon-name: "square-filled";
-          styles ["flat"]
         }
 
-        Button {
-          icon-name: "square-filled";
-          styles ["flat"]
+        ColorDialogButton tool_color {}
+
+        Separator {
+          orientation: horizontal;
         }
 
-        Button {
-          icon-name: "square-filled";
-          styles ["flat"]
+        Image {
+          icon-name: "integral";
         }
 
-        Button {
-          icon-name: "square-filled";
-          styles ["flat"]
+        ColorDialogButton stroke_color {}
+
+        SpinButton stroke_width {
+          adjustment: stroke;
+          digits: 2;
         }
 
-        Button {
-          icon-name: "square-filled";
-          styles ["flat"]
+        Separator {
+          orientation: horizontal;
+        }
+
+        Image corner_radius {
+          icon-name: "corner-radius";
+        }
+
+        SpinButton {
+          adjustment: radius;
+          digits: 2;
         }
       }
 
@@ -136,4 +143,18 @@ menu primary_menu {
       action: 'app.about';
     }
   }
+}
+
+Adjustment stroke {
+  lower: 0;
+  upper: 100.00;
+  value: 1.00;
+  step-increment: 1;
+}
+
+Adjustment radius {
+  lower: 0;
+  upper: 100.00;
+  value: 1.00;
+  step-increment: 1;
 }
