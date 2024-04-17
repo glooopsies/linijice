@@ -11,7 +11,7 @@ export type scene = struct {
     h: f32,
     paper: *rect,
     selection: nullable *rect,
-    selection_mask: []*node,
+    selection_mask: []*rect,
     layers: []layer,
 };
 
@@ -111,6 +111,7 @@ fn _scene_draw(this: *node) void = {
             node.draw(node);
         };
     };
+
     if (this.selection != null) {
         const selection = this.selection: *rect;
         selection.draw(selection);

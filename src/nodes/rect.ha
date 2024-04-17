@@ -83,10 +83,10 @@ fn draw_rect(this: *node) void = {
 
 fn rect_upload(this: *rect) void = {
     let array = [
-        this.position[0], this.position[1],
+        this.position[0] + this.translation[0], this.position[1] + this.translation[1],
         this.color[0], this.color[1], this.color[2], this.color[3],
 
-        this.position[0] + this.w, this.position[1] + this.h,
+        this.position[0] + this.translation[0] + this.w, this.position[1] + this.translation[1] + this.h,
         this.color[0], this.color[1], this.color[2], this.color[3],
     ];
 

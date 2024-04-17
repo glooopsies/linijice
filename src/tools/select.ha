@@ -13,6 +13,8 @@ const selection_color: math::vec4 = [0f32, 0.5f32, 0.5f32, 0.3f32];
 
 let selected: []*nodes::node = [];
 
+let selection_move = false;
+
 fn deselect() void = {
     let scene = nodes::get_scene();
 
@@ -24,54 +26,94 @@ fn deselect() void = {
 };
 
 fn select_down(point: math::vec2) void = {
-    deselect();
+    let scene = nodes::get_scene();
 
-    nodes::get_scene().selection = 
-        nodes::make_rect(point, 1f32, 1f32, selection_color);
+    selection_move = false;
+    for (const rect .. scene.selection_mask) {
+        const box = rect.bounding_box(rect);
+
+        if ((box[0][0] <= point[0] && box[0][1] <= point[1]) &&
+                (box[1][0] >= point[0] && box[1][1] >= point[1])) {
+            selection_move = true;
+            break;
+        };
+    };
+
+    if (!selection_move) {
+        deselect();
+
+        scene.selection = 
+            nodes::make_rect(point, 1f32, 1f32, selection_color);
+    };
 };
 
 fn select_move(vec: math::vec2) void = {
-    const selection = 
-        nodes::get_scene().selection: *nodes::rect;
+    if (selection_move) {
+        let scene = nodes::get_scene();
 
-	selection.w = vec[0];
-	selection.h = vec[1];
+        for (const node .. selected) {
+            node.translation = vec;
+        };
+
+        for (const node .. scene.selection_mask) {
+            node.translation = vec;
+        };
+    } else {
+        const selection = 
+            nodes::get_scene().selection: *nodes::rect;
+
+        selection.w = vec[0];
+        selection.h = vec[1];
+    };
 };
 
 fn select_up(vec: math::vec2) void = {
     let scene = nodes::get_scene();
-    defer free(scene.selection);
-    defer scene.selection = null;
 
-    let selection = scene.selection: *nodes::rect;
+    if (selection_move) {
+        for (const node .. selected) {
+            node.position = math::vec2add(node.position, node.translation);
+            node.translation = [0f32, 0f32];
+        };
 
-    const end_point: math::vec2 = [
-        selection.position[0] + selection.w, 
-        selection.position[1] + selection.h,
-    ]; 
+        for (const node .. scene.selection_mask) {
+            node.position = math::vec2add(node.position, node.translation);
+            node.translation = [0f32, 0f32];
+        };
+    } else {
+        defer free(scene.selection);
+        defer scene.selection = null;
 
-    const box = [
-        math::vec2min(selection.position, end_point),
-        math::vec2max(selection.position, end_point),
-    ];
+        let selection = scene.selection: *nodes::rect;
 
-    for (let layer &.. scene.layers) {
-        for (let node .. layer) {
-            if (node.intersects(node, box)) {
-                append(selected, node);
+        const end_point: math::vec2 = [
+            selection.position[0] + selection.w, 
+            selection.position[1] + selection.h,
+        ]; 
+
+        const box = [
+            math::vec2min(selection.position, end_point),
+            math::vec2max(selection.position, end_point),
+        ];
+
+        for (let layer &.. scene.layers) {
+            for (let node .. layer) {
+                if (node.intersects(node, box)) {
+                    append(selected, node);
+                };
             };
         };
-    };
 
-    for (const node .. selected) {
-        const box = node.bounding_box(node);
+        for (const node .. selected) {
+            const box = node.bounding_box(node);
 
-        const w = box[1][0] - box[0][0];
-        const h = box[1][1] - box[0][1];
+            const w = box[1][0] - box[0][0];
+            const h = box[1][1] - box[0][1];
 
-        append(scene.selection_mask, nodes::make_rect(
-            box[0], w,  h, selection_color, 
-        ));
+            append(scene.selection_mask, nodes::make_rect(
+                box[0], w,  h, selection_color, 
+            ));
+        };
     };
 };
 

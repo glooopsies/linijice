@@ -77,10 +77,10 @@ fn draw_ellipse(this: *node) void = {
 
 fn ellipse_upload(this: *ellipse) void = {
     let array = [
-        this.position[0], this.position[1],
+        this.position[0] + this.translation[0], this.position[1] + this.translation[1],
         this.color[0], this.color[1], this.color[2], this.color[3],
 
-        this.position[0] + this.r1, this.position[1] + this.r2,
+        this.position[0] + this.translation[0] + this.r1, this.position[1] + this.translation[1] + this.r2,
         this.color[0], this.color[1], this.color[2], this.color[3],
     ];
 
