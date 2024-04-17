@@ -76,7 +76,7 @@ fn draw_rect(this: *node) void = {
     scene_set_uniforms(rect_program);
 
     const location = gl::glGetUniformLocation(rect_program, c::nulstr("radius\0"): nullable *const i8);
-    gl::glUniform1f(location, this.radius);
+    gl::glUniform1f(location, get_scene().scale[0]*this.radius);
 
     gl::glDrawArrays(gl::GL_LINES, 0, 2);
 };
