@@ -15,20 +15,24 @@ export type ellipse = struct {
 
 let ellipse_program = 0u;
 
-export fn make_ellipse(position: math::vec2, r1: f32, r2: f32, color: math::vec4) *ellipse = {
+export fn make_ellipse(
+    position: math::vec2,
+    r1: f32,
+    r2: f32,
+    color: math::vec4
+) *ellipse = {
     return alloc(ellipse {
         position     = position,
         translation  = math::vec2id(0f32),
         rotation     = math::mat2id(1f32),
         scale        = math::vec2id(1f32),
-        selected     = false,
         bounding_box = &ellipse_bounding_box,
         intersects   = &ellipse_intersects,
+        draw         = &draw_ellipse,
 
-        color = color,
-        r1 = r1,
-        r2 = r2,
-        draw = &draw_ellipse,
+        color  = color,
+        r1     = r1,
+        r2     = r2,
     });
 };
 
@@ -80,16 +84,6 @@ fn ellipse_upload(this: *ellipse) void = {
         this.color[0], this.color[1], this.color[2], this.color[3],
     ];
 
-    if (this.selected) {
-        array = [
-            this.position[0], this.position[1],
-            1f32, 0f32, 0f32, 1f32,
-
-            this.position[0] + this.r1, this.position[1] + this.r2,
-            1f32, 0f32, 0f32, 1f32,
-        ];
-    };
-
     gl::glBindVertexArray(ellipse_VAO);
 
     gl::glBindBuffer(gl::GL_ARRAY_BUFFER, ellipse_VBO);
@@ -113,15 +107,24 @@ fn finalize_ellipse() void = {
 
 fn ellipse_bounding_box(this: *node) [2]math::vec2 = {
     const this = this: *ellipse;
+
+    const end_point: math::vec2 = [
+        this.position[0] + this.r1, 
+        this.position[1] + this.r2,
+    ]; 
+
     return [
-        [this.position[0], this.position[1]],
-        [this.position[0] + this.r1, this.position[1] + this.r2]
+        math::vec2min(this.position, end_point),
+        math::vec2max(this.position, end_point),
     ];
 };
 
 fn ellipse_intersects(this: *node, other: [2]math::vec2) bool = {
     const this = this: *ellipse;
-    return 
-        (this.position[0] >= other[0][0] && this.position[1] >= other[0][1]) &&
-        (this.position[0] + this.r1 <= other[1][0] && this.position[1] + this.r2 <= other[1][1]);
+
+    const box = this.bounding_box(this);
+
+    return
+        (box[0][0] >= other[0][0] && box[0][1] >= other[0][1]) &&
+        (box[1][0] <= other[1][0] && box[1][1] <= other[1][1]);
 };

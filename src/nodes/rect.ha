@@ -16,13 +16,18 @@ export type rect = struct {
 
 let rect_program = 0u;
 
-export fn make_rect(position: math::vec2, w: f32, h: f32, color: math::vec4, radius: f32 = 0f32) *rect = {
+export fn make_rect(
+    position: math::vec2,
+    w: f32, 
+    h: f32, 
+    color: math::vec4,
+    radius: f32 = 0f32,
+) *rect = {
     return alloc(rect {
         position     = position,
         translation  = math::vec2id(0f32),
         rotation     = math::mat2id(1f32),
         scale        = math::vec2id(1f32),
-        selected     = false,
         bounding_box = &rect_bounding_box,
         intersects   = &rect_intersects,
         draw         = &draw_rect,
@@ -85,16 +90,6 @@ fn rect_upload(this: *rect) void = {
         this.color[0], this.color[1], this.color[2], this.color[3],
     ];
 
-    if (this.selected) {
-        array = [
-            this.position[0], this.position[1],
-            1f32, 0f32, 0f32, 1f32,
-
-            this.position[0] + this.w, this.position[1] + this.h,
-            1f32, 0f32, 0f32, 1f32,
-        ];
-    };
-
     gl::glBindVertexArray(rect_VAO);
 
     gl::glBindBuffer(gl::GL_ARRAY_BUFFER, rect_VBO);
@@ -118,15 +113,23 @@ fn finalize_rect() void = {
 
 fn rect_bounding_box(this: *node) [2]math::vec2 = {
     const this = this: *rect;
+    const end_point: math::vec2 = [
+        this.position[0] + this.w, 
+        this.position[1] + this.h,
+    ]; 
+
     return [
-        [this.position[0], this.position[1]],
-        [this.position[0] + this.w, this.position[1] + this.h]
+        math::vec2min(this.position, end_point),
+        math::vec2max(this.position, end_point),
     ];
 };
 
 fn rect_intersects(this: *node, other: [2]math::vec2) bool = {
     const this = this: *rect;
-    return 
-        (this.position[0] >= other[0][0] && this.position[1] >= other[0][1]) &&
-        (this.position[0] + this.w <= other[1][0] && this.position[1] + this.h <= other[1][1]);
+
+    const box = this.bounding_box(this);
+
+    return
+        (box[0][0] >= other[0][0] && box[0][1] >= other[0][1]) &&
+        (box[1][0] <= other[1][0] && box[1][1] <= other[1][1]);
 };

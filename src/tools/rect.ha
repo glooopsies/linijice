@@ -10,6 +10,7 @@ const rect = tool {
 };
 
 export let radius = 0.0f32;
+export let stroke = 0.0f32;
 
 let rect_selected: nullable *nodes::rect = null;
 

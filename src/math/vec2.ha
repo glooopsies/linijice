@@ -154,6 +154,34 @@ export fn vec2to3(v1: vec2) vec3 = {
     assert(vec3eq(vec2to3(v1), v2), "vec2 to vec3 conversion incorrect");
 };
 
+export fn vec2min(vectors: vec2...) vec2 = {
+    let ret = vectors[0];
+
+    for (const vec &.. vectors) {
+        for (let i = 0z; i < len(ret); i += 1) {
+            if (vec[i] < ret[i])  {
+                ret[i] = vec[i];
+            };
+        };
+    };
+
+    return ret;
+};
+
+export fn vec2max(vectors: vec2...) vec2 = {
+    let ret = vectors[0];
+
+    for (const vec &.. vectors) {
+        for (let i = 0z; i < len(ret); i += 1) {
+            if (vec[i] > ret[i])  {
+                ret[i] = vec[i];
+            };
+        };
+    };
+
+    return ret;
+};
+
 export fn vec2print(v1: vec2) void = {
     fmt::printfln("({}, {})", v1[0], v1[1])!;
 };

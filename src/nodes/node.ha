@@ -7,7 +7,6 @@ export type node = struct {
     rotation:     math::mat2,
     scale:        math::vec2,
     draw:         *fn(*node) void,
-    selected:     bool,
     bounding_box: *fn(*node) [2]math::vec2,
     intersects:   *fn(*node, [2]math::vec2) bool,
 };

@@ -11,6 +11,7 @@ export type scene = struct {
     h: f32,
     paper: *rect,
     selection: nullable *rect,
+    selection_mask: []*node,
     layers: []layer,
 };
 
@@ -44,13 +45,13 @@ export fn new_scene() void = {
         w            = width,
         h            = height,
         draw         = &_scene_draw,
-        selected     = false,
         bounding_box = &scene_bounding_box,
         intersects   = &scene_intersects,
 
-        paper     = make_rect([0f32, 0f32], width, height, [1f32, 1f32, 1f32, 1f32]),
-        selection = null,
-        layers    = alloc([[]]),
+        paper          = make_rect([0f32, 0f32], width, height, [1f32, 1f32, 1f32, 1f32]),
+        selection      = null,
+        selection_mask = [],
+        layers         = alloc([[]]),
     });
 };
 
@@ -113,6 +114,10 @@ fn _scene_draw(this: *node) void = {
     if (this.selection != null) {
         const selection = this.selection: *rect;
         selection.draw(selection);
+    };
+
+    for (const rect .. this.selection_mask) {
+        rect.draw(rect);
     };
 
     gl::msaa_end();

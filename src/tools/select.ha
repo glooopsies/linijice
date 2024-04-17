@@ -14,9 +14,12 @@ const selection_color: math::vec4 = [0f32, 0.5f32, 0.5f32, 0.3f32];
 let selected: []*nodes::node = [];
 
 fn deselect() void = {
+    let scene = nodes::get_scene();
+
     for (len(selected) > 0) {
-        selected[0].selected = false;
         delete(selected[0]);
+        free(scene.selection_mask[0]);
+        delete(scene.selection_mask[0]);
     };
 };
 
@@ -35,28 +38,6 @@ fn select_move(vec: math::vec2) void = {
 	selection.h = vec[1];
 };
 
-fn get_box_coords(b: [2]math::vec2) [2]math::vec2 = {
-    if (b[0][0] < b[1][0] && b[0][1] > b[1][1]) {
-        return [
-            [b[0][0], b[1][1]], 
-            [b[1][0], b[0][1]]
-        ];
-    }
-    else if (b[0][0] > b[1][0] && b[0][1] > b[1][1]) {
-        return [
-            [b[1][0], b[1][1]], 
-            [b[0][0], b[0][1]]
-        ];
-    }
-    else if (b[0][0] > b[1][0] && b[0][1] < b[1][1]) {
-        return [
-            [b[1][0], b[0][1]], 
-            [b[0][0], b[1][1]]
-        ];
-    };
-    return b;
-};
-
 fn select_up(vec: math::vec2) void = {
     let scene = nodes::get_scene();
     defer free(scene.selection);
@@ -64,20 +45,33 @@ fn select_up(vec: math::vec2) void = {
 
     let selection = scene.selection: *nodes::rect;
 
-    const box = get_box_coords(
-        [
-            [selection.position[0], selection.position[1]]: math::vec2,
-            [selection.position[0] + selection.w, selection.position[1] + selection.h]: math::vec2,
-        ]
-    );
+    const end_point: math::vec2 = [
+        selection.position[0] + selection.w, 
+        selection.position[1] + selection.h,
+    ]; 
+
+    const box = [
+        math::vec2min(selection.position, end_point),
+        math::vec2max(selection.position, end_point),
+    ];
 
     for (let layer &.. scene.layers) {
         for (let node .. layer) {
             if (node.intersects(node, box)) {
                 append(selected, node);
-                node.selected = true;
             };
         };
+    };
+
+    for (const node .. selected) {
+        const box = node.bounding_box(node);
+
+        const w = box[1][0] - box[0][0];
+        const h = box[1][1] - box[0][1];
+
+        append(scene.selection_mask, nodes::make_rect(
+            box[0], w,  h, selection_color, 
+        ));
     };
 };
 
@@ -93,6 +87,9 @@ export fn delete_selection() void = {
                 };
             };
         };
+
+        free(scene.selection_mask[0]);
+        delete(scene.selection_mask[0]);
 
         free(selected[0]);
         delete(selected[0]);

@@ -79,7 +79,7 @@
         {
           "type": "git",
           "url": "https://git.sr.ht/~sircmpwn/hare",
-          "tag": "master"
+          "commit": "07c4c8ef"
         },
         {
           "type": "patch",
@@ -100,7 +100,7 @@
         {
           "type": "git",
           "url": "https://git.sr.ht/~yerinalexey/hare-gi",
-          "branch": "master"
+          "commit": "5b7571b7"
         },
         {
           "type": "patch",
