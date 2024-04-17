@@ -11,11 +11,12 @@ export type rect = struct {
     color: math::vec4,
     w: f32,
     h: f32,
+    radius: f32,
 };
 
 let rect_program = 0u;
 
-export fn make_rect(position: math::vec2, w: f32, h: f32, color: math::vec4) *rect = {
+export fn make_rect(position: math::vec2, w: f32, h: f32, color: math::vec4, radius: f32 = 0f32) *rect = {
     return alloc(rect {
         position     = position,
         translation  = math::vec2id(0f32),
@@ -24,11 +25,12 @@ export fn make_rect(position: math::vec2, w: f32, h: f32, color: math::vec4) *re
         selected     = false,
         bounding_box = &rect_bounding_box,
         intersects   = &rect_intersects,
+        draw         = &draw_rect,
 
-        color = color,
-        w = w,
-        h = h,
-        draw = &draw_rect,
+        color  = color,
+        w      = w,
+        h      = h,
+        radius = radius,
     });
 };
 
@@ -67,6 +69,9 @@ fn draw_rect(this: *node) void = {
     gl::glBindVertexArray(rect_VAO);
 
     scene_set_uniforms(rect_program);
+
+    const location = gl::glGetUniformLocation(rect_program, c::nulstr("radius\0"): nullable *const i8);
+    gl::glUniform1f(location, this.radius);
 
     gl::glDrawArrays(gl::GL_LINES, 0, 2);
 };

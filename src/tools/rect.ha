@@ -9,12 +9,14 @@ const rect = tool {
     transform_move  = true,
 };
 
+export let radius = 0.0f32;
+
 let rect_selected: nullable *nodes::rect = null;
 
 fn rect_down(point: math::vec2) void = {
 	deselect();
 
-	rect_selected = nodes::make_rect(point, 1f32, 1f32, color);
+	rect_selected = nodes::make_rect(point, 1f32, 1f32, color, radius);
 	nodes::scene_append(rect_selected);
 };
 

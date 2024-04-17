@@ -83,8 +83,11 @@ export fn scene_set_uniforms(program: uint) void = {
     const location = gl::glGetUniformLocation(program, c::nulstr("screen_transform\0"): *i8);
     gl::glUniformMatrix3fv(location, 1, gl::GL_FALSE, &transform[0]: *f32);
 
-    gl::glUniform1f(gl::glGetUniformLocation(ellipse_program, c::nulstr("width\0"): nullable *const i8), gl::width: f32);
-    gl::glUniform1f(gl::glGetUniformLocation(ellipse_program, c::nulstr("height\0"): nullable *const i8), gl::height: f32);
+    const location = gl::glGetUniformLocation(program, c::nulstr("width\0"): nullable *const i8);
+    gl::glUniform1f(location, gl::width: f32);
+
+    const location = gl::glGetUniformLocation(program, c::nulstr("height\0"): nullable *const i8);
+    gl::glUniform1f(location, gl::height: f32);
 };
 
 fn get_size() math::vec2 = {

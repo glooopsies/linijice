@@ -97,11 +97,11 @@ Adw.ApplicationWindow window {
           orientation: horizontal;
         }
 
-        Image corner_radius {
+        Image {
           icon-name: "corner-radius";
         }
 
-        SpinButton {
+        SpinButton corner_radius {
           adjustment: radius;
           digits: 2;
         }
@@ -147,14 +147,14 @@ menu primary_menu {
 
 Adjustment stroke {
   lower: 0;
-  upper: 100.00;
-  value: 1.00;
+  upper: 1000.00;
+  value: 0.00;
   step-increment: 1;
 }
 
 Adjustment radius {
   lower: 0;
-  upper: 100.00;
-  value: 1.00;
+  upper: 1000.00;
+  value: 0.00;
   step-increment: 1;
 }

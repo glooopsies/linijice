@@ -1,8 +1,24 @@
 #version 430 core
-out vec4 FragColor;
 
+layout (location = 0) in vec2 screen_positions[];
 layout (location = 2) in vec4 color;
 
+out vec4 FragColor;
+
+uniform float radius;
+
+float round(vec2 dist, vec2 size) {
+    return radius-length(max(abs(dist)-size+radius, 0.0));
+}
+
 void main() {
-    FragColor = color;
+    vec2 c = (screen_positions[0] + screen_positions[1]) / 2.0;
+    vec2 size = abs(screen_positions[1] - screen_positions[0]);
+
+    vec2 pos = gl_FragCoord.xy;
+
+    float dist = round(c - pos, size / 2.0f);
+    float alpha = step(0.0, dist);
+
+    FragColor = color * alpha;
 }
