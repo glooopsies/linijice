@@ -1,5 +1,6 @@
 .idea/
-.code
+.code/
+.vscode/
 
 build/
 .flatpak-builder/
