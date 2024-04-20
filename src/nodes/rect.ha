@@ -1,8 +1,13 @@
 use strings;
+use fmt;
+use io;
+use errors;
+use strconv;
 
 use src::gl;
 use src::math;
 
+use format::xml;
 use types::c;
 use libs::gl;
 
@@ -16,10 +21,10 @@ export type rect = struct {
 let rect_program = 0u;
 
 export fn make_rect(
-    position: math::vec2,
-    w: f32, 
-    h: f32, 
-    color: math::vec4,
+    position: math::vec2 = [0f32, 0f32],
+    w: f32 = 0f32,
+    h: f32 = 0f32,
+    color: math::vec4 = [0f32, 0f32, 0f32, 0f32],
     radius: f32 = 0f32,
 ) *rect = {
     return alloc(rect {
@@ -32,6 +37,7 @@ export fn make_rect(
         bounding_box = &rect_bounding_box,
         intersects   = &rect_intersects,
         draw         = &draw_rect,
+        save         = &rect_save,
 
         w      = w,
         h      = h,
@@ -114,9 +120,9 @@ fn finalize_rect() void = {
 fn rect_bounding_box(this: *node) [2]math::vec2 = {
     const this = this: *rect;
     const end_point: math::vec2 = [
-        this.position[0] + this.w, 
+        this.position[0] + this.w,
         this.position[1] + this.h,
-    ]; 
+    ];
 
     return [
         math::vec2min(this.position, end_point),
@@ -132,4 +138,48 @@ fn rect_intersects(this: *node, other: [2]math::vec2) bool = {
     return
         (box[0][0] >= other[0][0] && box[0][1] >= other[0][1]) &&
         (box[1][0] <= other[1][0] && box[1][1] <= other[1][1]);
+};
+
+fn rect_save(this: *node, stream: *io::stream, prefix: str = "") void = {
+    const this = this: *rect;
+
+    const box = this.bounding_box(this);
+
+    fmt::fprintfln(
+        stream,
+        "{}<rect fill=\"{}\" x=\"{}\" y=\"{}\" width=\"{}\" height=\"{}\" rx=\"{}\" />",
+        prefix, math::vec4tohex(this.color), box[0][0], box[0][1], box[1][0] - box[0][0], box[1][1] - box[0][1], this.radius)!;
+};
+
+fn rect_load(parser: *xml::parser) (*rect | errors::error | strconv::error) = {
+    let rect = make_rect();
+
+    for (true) {
+        const token = xml::scan(parser)!;
+        match(token) {
+            case let start: xml::elementstart =>
+                return errors::invalid;
+            case let end: xml::elementend =>
+                if (strings::compare(end, "rect") != 0) {
+                    free(rect);
+                    return errors::invalid;
+                };
+
+                return rect;
+            case let attr: xml::attribute =>
+                switch (attr.0) {
+                    case "fill"     => rect.color       = math::hextovec4(attr.1)?;
+                    case "x"        => rect.position[0] = strconv::stof32(attr.1)?;
+                    case "y"        => rect.position[1] = strconv::stof32(attr.1)?;
+                    case "width"    => rect.w           = strconv::stof32(attr.1)?;
+                    case "height"   => rect.h           = strconv::stof32(attr.1)?;
+                    case "rx", "ry" => rect.radius      = strconv::stof32(attr.1)?;
+                    case => yield;
+                };
+            case void => break;
+            case => yield;
+        };
+    };
+
+    return errors::invalid;
 };

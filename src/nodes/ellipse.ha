@@ -1,9 +1,14 @@
 use strings;
+use fmt;
+use io;
 use types::c;
+use errors;
+use strconv;
 
 use src::gl;
 use src::math;
 
+use format::xml;
 use libs::gl;
 
 export type ellipse = struct {
@@ -15,10 +20,10 @@ export type ellipse = struct {
 let ellipse_program = 0u;
 
 export fn make_ellipse(
-    position: math::vec2,
-    r1: f32,
-    r2: f32,
-    color: math::vec4
+    position: math::vec2 = [0f32, 0f32],
+    r1: f32 = 0f32,
+    r2: f32 = 0f32,
+    color: math::vec4 = [0f32, 0f32, 0f32, 0f32],
 ) *ellipse = {
     return alloc(ellipse {
         _type        = node_type::ELLIPSE,
@@ -30,6 +35,7 @@ export fn make_ellipse(
         bounding_box = &ellipse_bounding_box,
         intersects   = &ellipse_intersects,
         draw         = &draw_ellipse,
+        save         = &ellipse_save,
 
         r1     = r1,
         r2     = r2,
@@ -109,9 +115,9 @@ fn ellipse_bounding_box(this: *node) [2]math::vec2 = {
     const this = this: *ellipse;
 
     const end_point: math::vec2 = [
-        this.position[0] + this.r1, 
+        this.position[0] + this.r1,
         this.position[1] + this.r2,
-    ]; 
+    ];
 
     return [
         math::vec2min(this.position, end_point),
@@ -127,4 +133,63 @@ fn ellipse_intersects(this: *node, other: [2]math::vec2) bool = {
     return
         (box[0][0] >= other[0][0] && box[0][1] >= other[0][1]) &&
         (box[1][0] <= other[1][0] && box[1][1] <= other[1][1]);
+};
+
+fn ellipse_save(this: *node, stream: *io::stream, prefix: str = "") void = {
+    const this = this: *ellipse;
+
+    const box = this.bounding_box(this);
+
+    const cx = (box[0][0] + box[1][0]) / 2f32;
+    const cy = (box[0][1] + box[1][1]) / 2f32;
+
+    const rx = (box[1][0] - box[0][0]) / 2f32;
+    const ry = (box[1][1] - box[0][1]) / 2f32;
+
+    fmt::fprintfln(
+        stream,
+        "{}<ellipse fill=\"{}\" cx=\"{}\" cy=\"{}\" rx=\"{}\" ry=\"{}\" />",
+        prefix, math::vec4tohex(this.color), cx, cy, rx, ry)!;
+};
+
+fn ellipse_load(parser: *xml::parser) (*ellipse | errors::error | strconv::error) = {
+    let ellipse = make_ellipse();
+
+    let cx = 0f32;
+    let cy = 0f32;
+    let rx = 0f32;
+    let ry = 0f32;
+
+    for (true) {
+        const token = xml::scan(parser)!;
+        match(token) {
+            case let start: xml::elementstart =>
+                return errors::invalid;
+            case let end: xml::elementend =>
+                if (strings::compare(end, "ellipse") != 0) {
+                    free(ellipse);
+                    return errors::invalid;
+                };
+
+                ellipse.position[0] = cx - rx;
+                ellipse.position[1] = cy - ry;
+                ellipse.r1          = 2f32 * rx;
+                ellipse.r2          = 2f32 * ry;
+
+                return ellipse;
+            case let attr: xml::attribute =>
+                switch (attr.0) {
+                    case "fill" => ellipse.color = math::hextovec4(attr.1)?;
+                    case "cx"   => cx            = strconv::stof32(attr.1)?;
+                    case "cy"   => cy            = strconv::stof32(attr.1)?;
+                    case "rx"   => rx            = strconv::stof32(attr.1)?;
+                    case "ry"   => ry            = strconv::stof32(attr.1)?;
+                    case => yield;
+                };
+            case void => break;
+            case => yield;
+        };
+    };
+
+    return errors::invalid;
 };

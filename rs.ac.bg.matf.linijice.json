@@ -109,6 +109,20 @@
       ]
     },
     {
+      "name": "hare-xml",
+      "buildsystem": "simple",
+      "build-commands": [
+        "make install PREFIX=/app"
+      ],
+      "sources": [
+        {
+          "type": "git",
+          "url": "https://git.sr.ht/~sircmpwn/hare-xml",
+          "commit": "b127b963"
+        }
+      ]
+    },
+    {
       "name": "linijice",
       "buildsystem": "simple",
       "build-commands": [

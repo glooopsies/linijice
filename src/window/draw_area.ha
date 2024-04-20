@@ -15,7 +15,7 @@ use src::math;
 
 let resources: str = "";
 let pointer: math::vec2 = [0f32, 0f32];
-let area: nullable *gtk4::GLArea = null;
+let gl_area = null: *gtk4::GLArea;
 
 fn realize(area: *gtk4::GLArea) void = {
 	gtk4::glarea_make_current(area);
@@ -34,7 +34,7 @@ fn render(area: *gtk4::GLArea, context: *opaque) bool = {
 };
 
 fn rerender() void = {
-	gtk4::glarea_queue_render(area: *gtk4::GLArea);
+	gtk4::glarea_queue_render(gl_area: *gtk4::GLArea);
 };
 
 fn gl_resize(widget: *gtk4::GLArea, w: int, h: int, data: *opaque) void = {
@@ -143,11 +143,10 @@ fn zoom_end(gesture: *gtk4::GestureZoom, sequence: *gdk4::EventSequence, area: *
 fn draw_area_init(builder: *gtk4::Builder, res: str) void = {
     resources = res;
 
-    const gl_area = gtk4::builder_get_object(
-        builder, 
+    gl_area = gtk4::builder_get_object(
+        builder,
         c::nulstr("gl_area\0")
     ): *gtk4::GLArea;
-	area = gl_area;
 
 	gtk4::glarea_set_required_version(gl_area, 4, 3);
 

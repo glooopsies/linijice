@@ -12,7 +12,7 @@ Adw.ApplicationWindow window {
     Adw.HeaderBar header_bar {
 
       [end]
-      MenuButton {
+      MenuButton app_menu {
         primary: true;
         icon-name: 'open-menu-symbolic';
         tooltip-text: _('Menu');
@@ -89,7 +89,12 @@ Adw.ApplicationWindow window {
         ColorDialogButton stroke_color {}
 
         SpinButton stroke_width {
-          adjustment: stroke;
+          adjustment: Adjustment {
+            lower: 0;
+            upper: 1000.00;
+            value: 0.00;
+            step-increment: 1;
+          };
           digits: 2;
         }
 
@@ -102,7 +107,12 @@ Adw.ApplicationWindow window {
         }
 
         SpinButton corner_radius {
-          adjustment: radius;
+          adjustment: Adjustment {
+            lower: 0;
+            upper: 1000.00;
+            value: 0.00;
+            step-increment: 1;
+          };
           digits: 2;
         }
       }
@@ -129,6 +139,18 @@ Adw.ApplicationWindow window {
 menu primary_menu {
   section {
     item {
+      label: _('_Open');
+      action: 'file.open';
+    }
+
+    item {
+      label: _('_Save');
+      action: 'file.save';
+    }
+  }
+
+  section {
+    item {
       label: _('_Preferences');
       action: 'app.preferences';
     }
@@ -143,18 +165,4 @@ menu primary_menu {
       action: 'app.about';
     }
   }
-}
-
-Adjustment stroke {
-  lower: 0;
-  upper: 1000.00;
-  value: 0.00;
-  step-increment: 1;
-}
-
-Adjustment radius {
-  lower: 0;
-  upper: 1000.00;
-  value: 0.00;
-  step-increment: 1;
 }

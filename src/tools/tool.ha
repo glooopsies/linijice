@@ -37,12 +37,12 @@ fn toggled(button: *gtk4::ToggleButton, data: *opaque) void = {
 export fn init(builder: *gtk4::Builder) void = {
     for (let tool .. tools) {
         const tool_button = gtk4::builder_get_object(
-            builder, 
+            builder,
             c::nulstr(tool.0)
         ): *gtk4::ToggleButton;
 
-        g::signal_connect(tool_button, 
-            c::nulstr("toggled\0"), 
+        g::signal_connect(tool_button,
+            c::nulstr("toggled\0"),
             &toggled: gobject::Callback, tool.1);
     };
 };

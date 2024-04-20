@@ -40,9 +40,9 @@ fn tools_init(builder: *gtk4::Builder) void = {
 	gtk4::color_dialog_button_set_rgba(
 		color_button,
 		&gdk4::RGBA {
-			red   = tools::color[0], 
-			green = tools::color[1], 
-			blue  = tools::color[2], 
+			red   = tools::color[0],
+			green = tools::color[1],
+			blue  = tools::color[2],
 			alpha = tools::color[3]
 		}
 	);
@@ -53,7 +53,7 @@ fn tools_init(builder: *gtk4::Builder) void = {
 	);
 
     const radius = gtk4::builder_get_object(
-        builder, 
+        builder,
         c::nulstr("corner_radius\0")
     ): *gtk4::SpinButton;
 

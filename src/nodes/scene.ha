@@ -1,5 +1,11 @@
 use types::c;
+use io;
+use fmt;
+use errors;
+use strings;
+use strconv;
 
+use format::xml;
 use libs::gl;
 use src::gl;
 use src::math;
@@ -15,7 +21,7 @@ export type scene = struct {
     layers: []layer,
 };
 
-let active_scene: nullable *scene = null;
+let active_scene = null: *scene;
 
 fn scene_init(resources: str) void = {
     gl::glEnable(gl::GL_BLEND);
@@ -27,17 +33,11 @@ fn scene_init(resources: str) void = {
     };
 };
 
-fn scene_bounding_box(this: *node) [2]math::vec2 = 
-    [[0f32, 0f32], [0f32, 0f32]];
+fn scene_bounding_box(this: *node) [2]math::vec2 = [[0f32, 0f32], [0f32, 0f32]];
 fn scene_intersects(this: *node, other: [2]math::vec2) bool = false;
 
-export fn new_scene() void = {
-    scene_free();
-
-    const width = 620f32;
-    const height = 877f32;
-
-    active_scene = alloc(scene {
+export fn scene_new(width: f32 = 620f32, height: f32 = 877f32) *scene = {
+    return alloc(scene {
         _type        = node_type::SCENE,
         color        = math::vec4id(0f32),
         position     = math::vec2id(0f32),
@@ -49,24 +49,30 @@ export fn new_scene() void = {
         draw         = &_scene_draw,
         bounding_box = &scene_bounding_box,
         intersects   = &scene_intersects,
+        save         = &scene_save,
 
         paper          = make_rect([0f32, 0f32], width, height, [1f32, 1f32, 1f32, 1f32]),
         selection      = null,
         selection_mask = [],
-        layers         = alloc([[]]),
+        layers         = [],
     });
 };
 
-export fn get_scene() *scene = active_scene: *scene;
+fn scene_set_size(scene: *scene, s: math::vec2) void = {
+    scene.w = s[0];
+    scene.h = s[1];
+
+    scene.paper.w = s[0];
+    scene.paper.h = s[1];
+};
+
+export fn get_scene() *scene = active_scene;
 
 export fn scene_resize() void = {
     gl::msaa_resize();
 };
 
 export fn scene_append(node: *node) void = {
-    if (active_scene == null) { return; };
-    const active_scene = active_scene: *scene;
-
     const layer = len(active_scene.layers) - 1;
     append(active_scene.layers[layer], node);
 };
@@ -81,7 +87,7 @@ export fn scene_set_uniforms(program: uint) void = {
     const transform = scene_transform();
     const location = gl::glGetUniformLocation(program, c::nulstr("scene_transform\0"): *i8);
     gl::glUniformMatrix3fv(location, 1, gl::GL_FALSE, &transform[0]: *f32);
-    
+
     const transform = gl::screen_transform();
     const location = gl::glGetUniformLocation(program, c::nulstr("screen_transform\0"): *i8);
     gl::glUniformMatrix3fv(location, 1, gl::GL_FALSE, &transform[0]: *f32);
@@ -94,8 +100,6 @@ export fn scene_set_uniforms(program: uint) void = {
 };
 
 fn get_size() math::vec2 = {
-    const active_scene = active_scene: *scene;
-
     return [gl::width: f32 / active_scene.scale[0], gl::height: f32 / active_scene.scale[1]];
 };
 
@@ -105,7 +109,6 @@ fn _scene_draw(this: *node) void = {
 
     gl::glClearColor(gl::background[0], gl::background[1], gl::background[2], gl::background[3]);
     gl::glClear(gl::GL_COLOR_BUFFER_BIT | gl::GL_DEPTH_BUFFER_BIT);
-    // gl::glEnable(gl::GL_DEPTH_TEST);
 
     this.paper.draw(this.paper);
     for (let layer &.. this.layers) {
@@ -152,4 +155,112 @@ export fn scene_free() void = {
         const active_scene = active_scene: *scene;
         _scene_free(active_scene);
     };
+};
+
+export fn load(stream: *io::stream) (void | errors::error | strconv::error) = {
+    const parser = xml::parse(stream)!;
+    defer xml::parser_free(parser);
+
+    const token = xml::scan(parser)!;
+    if (!(token is xml::elementstart) || strings::compare(token as xml::elementstart, "svg") != 0) {
+        return errors::invalid;
+    };
+
+    free(active_scene);
+    active_scene = scene_load(parser)?: *scene;
+};
+
+fn layer_load(parser: *xml::parser) (layer | errors::error | strconv::error) = {
+    let layer = []: layer;
+
+    for (true) {
+        const token = xml::scan(parser)!;
+        match(token) {
+            case let start: xml::elementstart =>
+                switch (start) {
+                    case "rect" =>
+                        append(layer, rect_load(parser)?);
+                    case "ellipse" =>
+                        append(layer, ellipse_load(parser)?);
+                    case =>
+                        return errors::invalid;
+                };
+            case let end: xml::elementend =>
+                if (strings::compare(end, "g") != 0) {
+                    free(layer);
+                    return errors::invalid;
+                };
+
+                return layer;
+            case void => break;
+            case => yield;
+        };
+    };
+
+    return errors::invalid;
+};
+
+fn scene_load(parser: *xml::parser) (*node | errors::error | strconv::error) = {
+    let scene = scene_new();
+
+    for (true) {
+        const token = xml::scan(parser)!;
+        match(token) {
+            case let start: xml::elementstart =>
+                switch (start) {
+                    case "g" =>
+                        append(scene.layers, layer_load(parser)?);
+                    case =>
+                        return errors::invalid;
+                };
+            case let end: xml::elementend =>
+                if (strings::compare(end, "svg") != 0) {
+                    free(scene);
+                    return errors::invalid;
+                };
+
+                return scene;
+            case let attr: xml::attribute =>
+                switch (attr.0) {
+                    case "viewBox" =>
+                        const numbers = strings::split(attr.1, " ");
+                        defer free(numbers);
+                        if (len(numbers) != 4) { return errors::invalid; };
+
+                        scene_set_size(scene,[
+                            strconv::stof32(numbers[2])?,
+                            strconv::stof32(numbers[3])?,
+                        ]);
+                    case => yield;
+                };
+            case void => break;
+            case => yield;
+        };
+    };
+
+    return errors::invalid;
+};
+
+fn layer_save(layer: *layer, stream: *io::stream, prefix: str = "") void = {
+    fmt::fprintfln(stream, "{}<g>", prefix)!;
+
+    for (const node .. layer) {
+        node.save(node, stream, fmt::asprintf("{}\t", prefix));
+    };
+
+    fmt::fprintfln(stream, "{}</g>", prefix)!;
+};
+
+fn scene_save(this: *node, stream: *io::stream, prefix: str = "") void = {
+    const this = this: *scene;
+
+    fmt::fprintfln(stream, "{}<svg viewBox=\"0 0 {} {}\" xmlns=\"http://www.w3.org/2000/svg\">", prefix, this.w, this.h)!;
+    for (const layer &.. this.layers) {
+        layer_save(layer, stream, fmt::asprintf("{}\t", prefix));
+    };
+    fmt::fprintfln(stream, "{}</svg>", prefix)!;
+};
+
+export fn save(stream: *io::stream) void = {
+    active_scene.save(active_scene, stream);
 };

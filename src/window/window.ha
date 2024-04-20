@@ -10,6 +10,8 @@ use gtk4;
 
 use src::g;
 
+let window = null: *gtk4::Window;
+
 fn resources_init(resources: str) (void|errors::invalid) = {
 	const gresources = strings::concat(resources, "/data.gresource\0");
 	defer free(gresources);
@@ -22,13 +24,13 @@ fn resources_init(resources: str) (void|errors::invalid) = {
 
 	const css_provider = gtk4::css_provider_new();
 	gtk4::css_provider_load_from_resource(
-        css_provider, 
+        css_provider,
         c::nulstr("/rs/ac/bg/matf/linijice/style.css\0")
     );
 
 	const display = gdk4::display_get_default();
 	gtk4::style_context_add_provider_for_display(
-        display, css_provider: *gtk4::StyleProvider, 
+        display, css_provider: *gtk4::StyleProvider,
         g::GTK_STYLE_PROVIDER_PRIORITY_USER
     );
 };
@@ -51,9 +53,10 @@ export fn init(app: *adw::Application, resources: str) void = {
 
     draw_area_init(builder, resources);
 	tools_init(builder);
+	menu_init(builder);
 
-	const window = gtk4::builder_get_object(
-        builder, 
+	window = gtk4::builder_get_object(
+        builder,
         c::nulstr("window\0")
     ): *gtk4::Window;
 

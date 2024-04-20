@@ -1,3 +1,8 @@
+use io;
+use errors;
+
+use format::xml;
+
 use src::gl;
 use src::math;
 
@@ -15,6 +20,7 @@ export type node = struct {
     draw:         *fn(*node) void,
     bounding_box: *fn(*node) [2]math::vec2,
     intersects:   *fn(*node, [2]math::vec2) bool,
+    save:         *fn(*node, *io::stream, str = "") void,
 };
 
 export fn node_transform(this: *node) math::mat3 = {
@@ -31,7 +37,8 @@ export fn init(resources: str) void = {
     init_ellipse(resources);
     scene_init(resources);
 
-    new_scene();
+    active_scene = scene_new();
+    append(active_scene.layers, []);
 };
 
 export fn finalize() void = {

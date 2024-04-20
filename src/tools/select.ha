@@ -42,7 +42,7 @@ fn select_down(point: math::vec2) void = {
     if (!selection_move) {
         deselect();
 
-        scene.selection = 
+        scene.selection =
             nodes::make_rect(point, 1f32, 1f32, selection_color);
     };
 };
@@ -59,7 +59,7 @@ fn select_move(vec: math::vec2) void = {
             node.translation = vec;
         };
     } else {
-        const selection = 
+        const selection =
             nodes::get_scene().selection: *nodes::rect;
 
         selection.w = vec[0];
@@ -87,9 +87,9 @@ fn select_up(vec: math::vec2) void = {
         let selection = scene.selection: *nodes::rect;
 
         const end_point: math::vec2 = [
-            selection.position[0] + selection.w, 
+            selection.position[0] + selection.w,
             selection.position[1] + selection.h,
-        ]; 
+        ];
 
         const box = [
             math::vec2min(selection.position, end_point),
@@ -111,7 +111,7 @@ fn select_up(vec: math::vec2) void = {
             const h = box[1][1] - box[0][1];
 
             append(scene.selection_mask, nodes::make_rect(
-                box[0], w,  h, selection_color, 
+                box[0], w,  h, selection_color,
             ));
         };
     };

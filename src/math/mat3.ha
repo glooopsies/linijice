@@ -109,7 +109,6 @@ export fn mat3mul(matrices: mat3...) mat3 = {
     const m3: mat3 = mat3id(1f32);
 
     const m4: mat3 = [[6f32, 12f32, 6f32], [6f32, 12f32, 6f32], [6f32, 12f32, 6f32]];
-    
 
     assert(mat3eq(mat3mul(m1, m2, m3), m4), "matrices multiplication incorrect");
 };
@@ -176,7 +175,7 @@ export fn mat3inv(m: mat3) mat3 = {
         -m[1][0] * m[2][2] + m[1][2] * m[2][0],
          m[0][0] * m[2][2] - m[0][2] * m[2][0],
         -m[0][0] * m[1][2] + m[0][2] * m[1][0]
-    ], [ 
+    ], [
          m[1][0] * m[2][1] - m[1][1] * m[2][0],
         -m[0][0] * m[2][1] + m[0][1] * m[2][0],
          m[0][0] * m[1][1] - m[0][1] * m[1][0]

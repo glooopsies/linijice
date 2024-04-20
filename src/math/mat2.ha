@@ -180,7 +180,7 @@ export fn mat2det(m: mat2) f32 = {
 export fn mat2inv(m: mat2) mat2 = {
     let det: f32 = mat2det(m);
     let adj: mat2 = [
-        [ m[1][1], -m[0][1]], 
+        [ m[1][1], -m[0][1]],
         [-m[1][0],  m[0][0]]
     ];
 
