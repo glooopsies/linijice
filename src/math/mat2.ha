@@ -161,12 +161,6 @@ export fn mat2transpose(m1: mat2) mat2 = {
     assert(mat2eq(mat2transpose(m1), m2), "matrix transposition incorrect");
 };
 
-export fn mat2print(v1: mat2) void = {
-    fmt::printfln("[{} {}]", v1[0][0], v1[1][0])!;
-    fmt::printfln("[{} {}]", v1[0][1], v1[1][1])!;
-    fmt::printfln("")!;
-};
-
 export fn mat2det(m: mat2) f32 = {
     return m[0][0] * m[1][1] - m[0][1] * m[1][0];
 };
@@ -194,4 +188,9 @@ export fn mat2inv(m: mat2) mat2 = {
     assert(mat2eq(mat2inv(m1), m2), "matrix inverse incorrect");
 };
 
+export fn mat2print(v1: mat2) void = {
+    fmt::printfln("[{} {}]", v1[0][0], v1[1][0])!;
+    fmt::printfln("[{} {}]", v1[0][1], v1[1][1])!;
+    fmt::printfln("")!;
+};
 

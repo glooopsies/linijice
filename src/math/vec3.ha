@@ -106,7 +106,7 @@ export fn vec3inv(v1: vec3) vec3 = {
     return v1;
 };
 
-@test fn vec2inv() void = {
+@test fn vec3inv() void = {
     const v1: vec3 = [4f32, 2f32, 8f32];
     const v2: vec3 = [1f32/4f32, 1f32/2f32, 1f32/8f32];
 

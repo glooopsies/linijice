@@ -147,7 +147,7 @@ export fn vec2to3(v1: vec2) vec3 = {
     return [v1[0], v1[1], 1f32];
 };
 
-@test fn vec3to2() void = {
+@test fn vec2to3() void = {
     const v1: vec2 = [1f32, 2f32];
     const v2: vec3 = [1f32, 2f32, 1f32];
 
@@ -168,6 +168,16 @@ export fn vec2min(vectors: vec2...) vec2 = {
     return ret;
 };
 
+@test fn vec2min() void = {
+    const v1: vec2  = [1f32, 2f32];
+    const v2: vec2  = [3f32, -1f32];
+    const v3: vec2  = [-6f32, 5f32];
+    const v4: vec2  = [4f32, -1f32];
+    const ret: vec2 = [-6f32, -1f32];
+
+    assert(vec2eq(vec2min(v1, v2, v3, v4), ret), "vec2min incorrect");
+};
+
 export fn vec2max(vectors: vec2...) vec2 = {
     let ret = vectors[0];
 
@@ -180,6 +190,16 @@ export fn vec2max(vectors: vec2...) vec2 = {
     };
 
     return ret;
+};
+
+@test fn vec2max() void = {
+    const v1: vec2  = [1f32, 2f32];
+    const v2: vec2  = [3f32, -1f32];
+    const v3: vec2  = [-6f32, 5f32];
+    const v4: vec2  = [4f32, -1f32];
+    const ret: vec2 = [4f32, 5f32];
+
+    assert(vec2eq(vec2max(v1, v2, v3, v4), ret), "vec2max incorrect");
 };
 
 export fn vec2print(v1: vec2) void = {
