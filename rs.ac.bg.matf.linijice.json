@@ -1,7 +1,7 @@
 {
   "id": "rs.ac.bg.matf.linijice",
   "runtime": "org.gnome.Platform",
-  "runtime-version": "45",
+  "runtime-version": "46",
   "sdk": "org.gnome.Sdk",
   "command": "main",
   "finish-args": [
@@ -93,6 +93,8 @@
       "build-commands": [
         "./generate4",
         "sed -i '/#/d' bindings/harfbuzz/_generated.ha",
+        "sed -i '/#/d' bindings/glib/_generated.ha",
+        "sed -i '/gobject/d' bindings/glib/_generated.ha",
         "make",
         "make install4 PREFIX=/app"
       ],
@@ -100,7 +102,7 @@
         {
           "type": "git",
           "url": "https://git.sr.ht/~yerinalexey/hare-gi",
-          "commit": "5b7571b7"
+          "branch": "master"
         },
         {
           "type": "patch",

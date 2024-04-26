@@ -10,7 +10,7 @@
  DESTDIR =
  PREFIX = /usr/local
 diff --git a/generate4 b/generate4
-index 23061f0..1d1f6f9 100755
+index de2eb6f..85b26d1 100755
 --- a/generate4
 +++ b/generate4
 @@ -5,7 +5,7 @@ BIND=./bindings
@@ -20,9 +20,9 @@ index 23061f0..1d1f6f9 100755
 -	"$BIND"/gsk "$BIND"/gtk4
 +	"$BIND"/gsk "$BIND"/gtk4 "$BIND"/adw
 
- hare build cmd/hare-gi && ./hare-gi -B \
+ hare build cmd/hare-gi && exec ./hare-gi -B \
  	-m GLib,glib,"$BIND"/glib/_generated.ha \
-@@ -24,6 +24,7 @@ hare build cmd/hare-gi && ./hare-gi -B \
+@@ -24,6 +24,7 @@ hare build cmd/hare-gi && exec ./hare-gi -B \
  	-m Graphene,graphene,"$BIND"/graphene/_generated.ha \
  	-m Gsk,gsk,"$BIND"/gsk/_generated.ha \
  	-m Gtk,gtk4,"$BIND"/gtk4/_generated.ha \
@@ -30,10 +30,33 @@ index 23061f0..1d1f6f9 100755
  	/usr/share/gir-1.0/GLib-2.0.gir \
  	/usr/share/gir-1.0/GObject-2.0.gir \
  	/usr/share/gir-1.0/Gio-2.0.gir \
-@@ -39,4 +40,5 @@ hare build cmd/hare-gi && ./hare-gi -B \
+@@ -39,4 +40,5 @@ hare build cmd/hare-gi && exec ./hare-gi -B \
  	/usr/share/gir-1.0/xlib-2.0.gir \
  	/usr/share/gir-1.0/Graphene-1.0.gir \
  	/usr/share/gir-1.0/Gsk-4.0.gir \
 -	/usr/share/gir-1.0/Gtk-4.0.gir
 +	/usr/share/gir-1.0/Gtk-4.0.gir \
 +	/usr/share/gir-1.0/Adw-1.gir
+diff --git a/gir/parse.ha b/gir/parse.ha
+index 91c55d4..84198de 100644
+--- a/gir/parse.ha
++++ b/gir/parse.ha
+@@ -439,7 +439,7 @@ fn parse_member(parser: *xml::parser, members: *opaque) (void | error) = {
+ };
+ 
+ // callable
+-fn parse_callable(callable: *callable) [17]scan = [
++fn parse_callable(callable: *callable) [20]scan = [
+ 	("introspectable", null),
+ 	("deprecated", null),
+ 	("deprecated-version", null),
+@@ -457,6 +457,9 @@ fn parse_callable(callable: *callable) [17]scan = [
+ 	("shadows", &callable.shadows),
+ 	("throws", &callable.throws),
+ 	("moved-to", null),
++	("glib:async-func", null),
++	("glib:sync-func", null),
++	("glib:finish-func", null)
+ ];
+ fn parse_parameters(parser: *xml::parser, parameters: *opaque) (void | error) = {
+ 	return parse_element(parser, "parameters",
