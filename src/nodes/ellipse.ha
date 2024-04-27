@@ -78,16 +78,16 @@ fn draw_ellipse(this: *node) void = {
 
     scene_set_uniforms(ellipse_program);
 
+    const location = gl::glGetUniformLocation(ellipse_program, c::nulstr("color\0"): nullable *const i8);
+    gl::glUniform4f(location, this.color[0], this.color[1], this.color[2], this.color[3]);
+
     gl::glDrawArrays(gl::GL_LINES, 0, 2);
 };
 
 fn ellipse_upload(this: *ellipse) void = {
     let array = [
         this.position[0] + this.translation[0], this.position[1] + this.translation[1],
-        this.color[0], this.color[1], this.color[2], this.color[3],
-
         this.position[0] + this.translation[0] + this.r1, this.position[1] + this.translation[1] + this.r2,
-        this.color[0], this.color[1], this.color[2], this.color[3],
     ];
 
     gl::glBindVertexArray(ellipse_VAO);
@@ -95,11 +95,8 @@ fn ellipse_upload(this: *ellipse) void = {
     gl::glBindBuffer(gl::GL_ARRAY_BUFFER, ellipse_VBO);
     gl::glBufferData(gl::GL_ARRAY_BUFFER, len(array) * size(f32): uintptr, &array[0], gl::GL_STATIC_DRAW);
 
-    gl::glVertexAttribPointer(0, 2, gl::GL_FLOAT, gl::GL_FALSE, 6 * size(f32): i32, 0: uintptr : *opaque);
+    gl::glVertexAttribPointer(0, 2, gl::GL_FLOAT, gl::GL_FALSE, 2 * size(f32): i32, 0: uintptr : *opaque);
     gl::glEnableVertexAttribArray(0);
-
-    gl::glVertexAttribPointer(1, 4, gl::GL_FLOAT, gl::GL_FALSE, 6 * size(f32): i32, (2 * size(f32)): uintptr : *opaque);
-    gl::glEnableVertexAttribArray(1);
 
     gl::glBindBuffer(gl::GL_ARRAY_BUFFER, 0);
     gl::glBindVertexArray(0);
