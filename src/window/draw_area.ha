@@ -51,8 +51,18 @@ fn motion(gesture: *gtk4::EventControllerMotion, x: f64, y: f64, area: *gtk4::GL
 fn key_pressed(gesture: *gtk4::EventControllerKey, keyval: uint, keycode: uint, state: gdk4::ModifierType, area: *gtk4::GLArea) glib::boolean = {
 	defer gtk4::glarea_queue_render(area);
 
+	const state = gtk4::event_controller_get_current_event_state(gesture: *gtk4::EventController);
+
 	if (keyval == g::KEY_Delete) {
 		tools::delete_selection();
+		return glib::TRUE;
+	};
+
+	if (state & gdk4::ModifierType::CONTROL_MASK > 0) {
+		if (keyval == g::KEY_A || keyval == g::KEY_a) {
+			tools::select_all();
+			return glib::TRUE;
+		};
 	};
 
 	return glib::TRUE;

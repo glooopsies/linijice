@@ -117,6 +117,28 @@ fn select_up(vec: math::vec2) void = {
     };
 };
 
+export fn select_all() void = {
+    deselect();
+    let scene = nodes::get_scene();
+
+    for (let layer &.. scene.layers) {
+        for (let node .. layer) {
+            append(selected, node);
+        };
+    };
+
+    for (const node .. selected) {
+        const box = node.bounding_box(node);
+
+        const w = box[1][0] - box[0][0];
+        const h = box[1][1] - box[0][1];
+
+        append(scene.selection_mask, nodes::make_rect(
+            box[0], w,  h, selection_color,
+        ));
+    };
+};
+
 export fn delete_selection() void = {
     let scene = nodes::get_scene();
 
