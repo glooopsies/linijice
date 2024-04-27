@@ -7,7 +7,7 @@ use src::gl;
 use src::math;
 
 export type node_type = enum {
-    RECT, ELLIPSE, SCENE
+    RECT, ELLIPSE, SCENE, BEZIER
 };
 
 export type node = struct {
