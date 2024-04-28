@@ -35,6 +35,7 @@ export fn node_transform(this: *node) math::mat3 = {
 export fn init(resources: str) void = {
     init_rect(resources);
     init_ellipse(resources);
+    init_bezier(resources);
     scene_init(resources);
 
     active_scene = scene_new();

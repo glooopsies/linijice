@@ -18,6 +18,8 @@ let selection_move = false;
 fn deselect() void = {
     let scene = nodes::get_scene();
 
+    bezier_last = null;
+
     for (len(selected) > 0) {
         delete(selected[0]);
         free(scene.selection_mask[0]);

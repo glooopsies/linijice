@@ -12,6 +12,5 @@ void main() {
     screen_position = vec2(pos.x, height - pos.y);
 
     vec2 Position = (screen_transform * vec3(pos.xy, 1.0)).xy;
-
-    gl_Position = vec4(Position.xy , 0.0, 1.0);
+    gl_Position = vec4(Position , 0.0, 1.0);
 }

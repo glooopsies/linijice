@@ -13,17 +13,23 @@ use libs::gl;
 
 export type point = math::vec2;
 
+export type handle = struct {
+    point: point,
+    control_point: point,
+};
+
 export type bezier = struct {
     node,
-    points: []point,
+    handles: []handle,
 };
 
 let bezier_program = 0u;
+let bezier_point_program = 0u;
 
 export fn make_bezier(
     position: math::vec2 = [0f32, 0f32],
     color: math::vec4 = [0f32, 0f32, 0f32, 0f32],
-    points: []point = [],
+    handles: []handle = [],
 ) *bezier = {
     return alloc(bezier {
         _type        = node_type::BEZIER,
@@ -37,20 +43,24 @@ export fn make_bezier(
         draw         = &draw_bezier,
         save         = &bezier_save,
 
-        points = points,
+        handles = handles,
     });
 };
 
 let bezier_VBO = 0u, bezier_VAO = 0u;
 fn init_bezier(resources: str) void = {
-    const vert_path = strings::concat(resources, "/shaders/scene_transform.vert");
+    const vert_path = strings::concat(resources, "/shaders/bezier.vert");
     defer free(vert_path);
+
+    const geom_path = strings::concat(resources, "/shaders/bezier.geom");
+    defer free(geom_path);
 
     const frag_path = strings::concat(resources, "/shaders/bezier.frag");
     defer free(frag_path);
 
     const program = gl::compile_program([
         gl::compile_shader(vert_path, gl::GL_VERTEX_SHADER),
+        gl::compile_shader(geom_path, gl::GL_GEOMETRY_SHADER),
         gl::compile_shader(frag_path, gl::GL_FRAGMENT_SHADER)
     ]);
 
@@ -58,6 +68,29 @@ fn init_bezier(resources: str) void = {
     case let shader: uint => yield shader;
     case let err: gl::error => gl::check_error(err);
     };
+
+
+
+    const vert_path = strings::concat(resources, "/shaders/bezier.vert");
+    defer free(vert_path);
+
+    const geom_path = strings::concat(resources, "/shaders/bezier_points.geom");
+    defer free(geom_path);
+
+    const frag_path = strings::concat(resources, "/shaders/bezier_points.frag");
+    defer free(frag_path);
+
+    const program = gl::compile_program([
+        gl::compile_shader(vert_path, gl::GL_VERTEX_SHADER),
+        gl::compile_shader(geom_path, gl::GL_GEOMETRY_SHADER),
+        gl::compile_shader(frag_path, gl::GL_FRAGMENT_SHADER)
+    ]);
+
+    bezier_point_program = match(program) {
+    case let shader: uint => yield shader;
+    case let err: gl::error => gl::check_error(err);
+    };
+
 
     gl::glGenVertexArrays(1, &bezier_VAO);
     gl::glGenBuffers(1, &bezier_VBO);
@@ -76,19 +109,43 @@ fn draw_bezier(this: *node) void = {
     const location = gl::glGetUniformLocation(bezier_program, c::nulstr("color\0"): nullable *const i8);
     gl::glUniform4f(location, this.color[0], this.color[1], this.color[2], this.color[3]);
 
-    gl::glDrawArrays(gl::GL_LINES, 0, len(this.points): i32);
+    const location = gl::glGetUniformLocation(bezier_program, c::nulstr("stroke\0"): nullable *const i8);
+    gl::glUniform1f(location, get_scene().scale[0]*5f32);
+
+    gl::glDrawArrays(gl::GL_LINE_STRIP, 0, len(this.handles): i32);
+
+
+    gl::glUseProgram(bezier_point_program);
+    gl::glBindVertexArray(bezier_VAO);
+    scene_set_uniforms(bezier_point_program);
+    gl::glDrawArrays(gl::GL_POINTS, 0, len(this.handles): i32);
 };
 
 fn bezier_upload(this: *bezier) void = {
-    const array = this.points;
+    let array: []f32 = [];
+    defer free(array);
+
+    for (const handle &.. this.handles) {
+        const point = handle.point;
+        const control_point = handle.control_point;
+
+        append(array, point[0]);
+        append(array, point[1]);
+
+        append(array, control_point[0]);
+        append(array, control_point[1]);
+    };
 
     gl::glBindVertexArray(bezier_VAO);
 
     gl::glBindBuffer(gl::GL_ARRAY_BUFFER, bezier_VBO);
     gl::glBufferData(gl::GL_ARRAY_BUFFER, len(array) * size(f32): uintptr, &array[0], gl::GL_STATIC_DRAW);
 
-    gl::glVertexAttribPointer(0, 2, gl::GL_FLOAT, gl::GL_FALSE, 2 * size(f32): i32, 0: uintptr : *opaque);
+    gl::glVertexAttribPointer(0, 2, gl::GL_FLOAT, gl::GL_FALSE, 4 * size(f32): i32, 0: uintptr : *opaque);
     gl::glEnableVertexAttribArray(0);
+
+    gl::glVertexAttribPointer(1, 2, gl::GL_FLOAT, gl::GL_FALSE, 4 * size(f32): i32, (2 * size(f32)): uintptr : *opaque);
+    gl::glEnableVertexAttribArray(1);
 
     gl::glBindBuffer(gl::GL_ARRAY_BUFFER, 0);
     gl::glBindVertexArray(0);

@@ -54,15 +54,7 @@ export fn scene_new(width: f32 = 620f32, height: f32 = 877f32) *scene = {
         paper          = make_rect([0f32, 0f32], width, height, [1f32, 1f32, 1f32, 1f32]),
         selection      = null,
         selection_mask = [],
-        layers         = alloc([
-            alloc([
-                make_bezier([0f32, 0f32], [1f32, 0f32, 0f32, 1f32], alloc([
-                    [0f32, 0f32],
-                    [100f32, 100f32],
-                    [0f32, 200f32],
-                ]))
-            ])
-        ]),
+        layers         = [],
     });
 };
 
