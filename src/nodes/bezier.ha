@@ -122,24 +122,12 @@ fn draw_bezier(this: *node) void = {
 };
 
 fn bezier_upload(this: *bezier) void = {
-    let array: []f32 = [];
-    defer free(array);
-
-    for (const handle &.. this.handles) {
-        const point = handle.point;
-        const control_point = handle.control_point;
-
-        append(array, point[0]);
-        append(array, point[1]);
-
-        append(array, control_point[0]);
-        append(array, control_point[1]);
-    };
+    let array = this.handles;
 
     gl::glBindVertexArray(bezier_VAO);
 
     gl::glBindBuffer(gl::GL_ARRAY_BUFFER, bezier_VBO);
-    gl::glBufferData(gl::GL_ARRAY_BUFFER, len(array) * size(f32): uintptr, &array[0], gl::GL_STATIC_DRAW);
+    gl::glBufferData(gl::GL_ARRAY_BUFFER, len(array) * 4 * size(f32): uintptr, &array[0], gl::GL_STATIC_DRAW);
 
     gl::glVertexAttribPointer(0, 2, gl::GL_FLOAT, gl::GL_FALSE, 4 * size(f32): i32, 0: uintptr : *opaque);
     gl::glEnableVertexAttribArray(0);
