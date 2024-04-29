@@ -38,7 +38,7 @@ export fn vec4eq(v1: vec4, v2: vec4) bool = {
 fn runesf32(runes: []rune) f32 = {
     const x = strings::fromrunes(runes);
     defer free(x);
-    const x = strconv::stou64b(x, 16)!;
+    const x = strconv::stou64(x, 16)!;
     return x: f32 / 255f32;
 };
 

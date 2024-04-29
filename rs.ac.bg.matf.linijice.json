@@ -79,7 +79,7 @@
         {
           "type": "git",
           "url": "https://git.sr.ht/~sircmpwn/hare",
-          "commit": "07c4c8ef"
+          "tag": "master"
         },
         {
           "type": "patch",
@@ -120,7 +120,11 @@
         {
           "type": "git",
           "url": "https://git.sr.ht/~sircmpwn/hare-xml",
-          "commit": "b127b963"
+          "branch": "master"
+        },
+        {
+          "type": "patch",
+          "path": "aux/001-update-hare-xml.patch"
         }
       ]
     },

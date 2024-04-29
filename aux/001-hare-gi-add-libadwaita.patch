@@ -1,3 +1,5 @@
+diff --git a/Makefile b/Makefile
+index 1a56721..76d6ead 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -4,7 +4,7 @@
@@ -6,9 +8,22 @@
  MODULES3 = $(CORE_MODULES) gdk gtk
 -MODULES4 = $(CORE_MODULES) gdk4 gtk4 pangocairo graphene gsk
 +MODULES4 = $(CORE_MODULES) gdk4 gtk4 pangocairo graphene gsk adw
-
+ 
  DESTDIR =
  PREFIX = /usr/local
+diff --git a/format/fastxml/parser.ha b/format/fastxml/parser.ha
+index f970ac5..5dc1b52 100644
+--- a/format/fastxml/parser.ha
++++ b/format/fastxml/parser.ha
+@@ -369,7 +369,7 @@ fn scan_charref(par: *parser) (rune | error) = {
+ 	if (len(memio::string(&par.entbuf)!) == 0) {
+ 		return par.line: syntaxerr;
+ 	};
+-	match (strconv::stou32b(memio::string(&par.entbuf)!, base)) {
++	match (strconv::stou32(memio::string(&par.entbuf)!, base)) {
+ 	case let u: u32 =>
+ 		return u: rune;
+ 	case (strconv::invalid | strconv::overflow) =>
 diff --git a/generate4 b/generate4
 index de2eb6f..85b26d1 100755
 --- a/generate4
@@ -19,7 +34,7 @@ index de2eb6f..85b26d1 100755
  	"$BIND"/pango "$BIND"/pangocairo "$BIND"/gdk4 "$BIND"/xlib "$BIND"/graphene \
 -	"$BIND"/gsk "$BIND"/gtk4
 +	"$BIND"/gsk "$BIND"/gtk4 "$BIND"/adw
-
+ 
  hare build cmd/hare-gi && exec ./hare-gi -B \
  	-m GLib,glib,"$BIND"/glib/_generated.ha \
 @@ -24,6 +24,7 @@ hare build cmd/hare-gi && exec ./hare-gi -B \

@@ -1,0 +1,13 @@
+diff --git a/format/xml/parser.ha b/format/xml/parser.ha
+index 1f1165a..0127a7a 100644
+--- a/format/xml/parser.ha
++++ b/format/xml/parser.ha
+@@ -404,7 +404,7 @@ fn scan_charref(par: *parser) (rune | error) = {
+ 	if (len(memio::string(&par.entbuf)?) == 0) {
+ 		return par.line: syntaxerr;
+ 	};
+-	match (strconv::stou32b(memio::string(&par.entbuf)?, base)) {
++	match (strconv::stou32(memio::string(&par.entbuf)?, base)) {
+ 	case let u: u32 =>
+ 		return u: rune;
+ 	case (strconv::invalid | strconv::overflow) =>
