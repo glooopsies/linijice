@@ -173,4 +173,6 @@ export fn delete_selection() void = {
         free(scene.selection_mask[0]);
         delete(scene.selection_mask[0]);
     };
+
+    bezier_last = null;
 };
