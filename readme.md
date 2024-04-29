@@ -22,6 +22,8 @@ S obzirom da se jezik brzo razvija i teško je uskladiti verzije svih biblioteka
 $ make flatpak-run
 ```
 
+![video](aux/linijice.gif)
+
 ---
 Ana Mijović, 59/2021   
 Jana Botorić, 87/2021   
