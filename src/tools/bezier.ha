@@ -13,8 +13,11 @@ let bezier_last: nullable *nodes::bezier = null;
 
 fn bezier_down(point: math::vec2) void = {
     if (bezier_last == null) {
+        deselect();
         bezier_last = nodes::make_bezier([0f32, 0f32], color, stroke_width);
 	    nodes::scene_append(bezier_last);
+
+        append(nodes::get_scene().selected, bezier_last);
     };
 
     let last = bezier_last: *nodes::bezier; 

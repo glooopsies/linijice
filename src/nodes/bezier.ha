@@ -115,11 +115,18 @@ fn draw_bezier(this: *node) void = {
     gl::glUniform1f(location, get_scene().scale[0]*this.stroke);
 
     gl::glDrawArrays(gl::GL_LINE_STRIP, 0, len(this.handles): i32);
+};
 
+fn draw_bezier_controls(this: *node) void = {
+    let this = this: *bezier;
+
+    bezier_upload(this);
 
     gl::glUseProgram(bezier_point_program);
     gl::glBindVertexArray(bezier_VAO);
+
     scene_set_uniforms(bezier_point_program);
+
     gl::glDrawArrays(gl::GL_POINTS, 0, len(this.handles): i32);
 };
 

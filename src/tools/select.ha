@@ -1,6 +1,8 @@
 use src::math;
 use src::nodes;
 
+use fmt;
+
 const select = tool {
     mouse_down      = &select_down,
     mouse_move      = &select_move,
@@ -11,8 +13,6 @@ const select = tool {
 
 const selection_color: math::vec4 = [0f32, 0.5f32, 0.5f32, 0.3f32];
 
-let selected: []*nodes::node = [];
-
 let selection_move = false;
 
 fn deselect() void = {
@@ -20,8 +20,11 @@ fn deselect() void = {
 
     bezier_last = null;
 
-    for (len(selected) > 0) {
-        delete(selected[0]);
+    for (len(scene.selected) > 0) {
+        delete(scene.selected[0]);
+    };
+
+    for (len(scene.selection_mask) > 0) {
         free(scene.selection_mask[0]);
         delete(scene.selection_mask[0]);
     };
@@ -53,7 +56,7 @@ fn select_move(vec: math::vec2) void = {
     if (selection_move) {
         let scene = nodes::get_scene();
 
-        for (const node .. selected) {
+        for (const node .. scene.selected) {
             node.translation = vec;
         };
 
@@ -73,7 +76,7 @@ fn select_up(vec: math::vec2) void = {
     let scene = nodes::get_scene();
 
     if (selection_move) {
-        for (const node .. selected) {
+        for (const node .. scene.selected) {
             node.position = math::vec2add(node.position, node.translation);
             node.translation = [0f32, 0f32];
         };
@@ -101,12 +104,12 @@ fn select_up(vec: math::vec2) void = {
         for (let layer &.. scene.layers) {
             for (let node .. layer) {
                 if (node.intersects(node, box)) {
-                    append(selected, node);
+                    append(scene.selected, node);
                 };
             };
         };
 
-        for (const node .. selected) {
+        for (const node .. scene.selected) {
             const box = node.bounding_box(node);
 
             const w = box[1][0] - box[0][0];
@@ -125,11 +128,11 @@ export fn select_all() void = {
 
     for (let layer &.. scene.layers) {
         for (let node .. layer) {
-            append(selected, node);
+            append(scene.selected, node);
         };
     };
 
-    for (const node .. selected) {
+    for (const node .. scene.selected) {
         const box = node.bounding_box(node);
 
         const w = box[1][0] - box[0][0];
@@ -144,20 +147,22 @@ export fn select_all() void = {
 export fn delete_selection() void = {
     let scene = nodes::get_scene();
 
-    for (len(selected) > 0) {
+    for (len(scene.selected) > 0) {
         for (let i = 0z; i < len(scene.layers); i += 1) {
             for (let j = 0z; j < len(scene.layers[i]); j += 1) {
-                if (scene.layers[i][j] == selected[0]) {
+                if (scene.layers[i][j] == scene.selected[0]) {
                     delete(scene.layers[i][j]);
                     j -= 1;
                 };
             };
         };
 
+        free(scene.selected[0]);
+        delete(scene.selected[0]);
+    };
+
+    for (len(scene.selection_mask) > 0) {
         free(scene.selection_mask[0]);
         delete(scene.selection_mask[0]);
-
-        free(selected[0]);
-        delete(selected[0]);
     };
 };

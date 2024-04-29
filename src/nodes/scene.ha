@@ -16,6 +16,7 @@ export type scene = struct {
     w: f32,
     h: f32,
     paper: *rect,
+    selected: []*node,
     selection: nullable *rect,
     selection_mask: []*rect,
     layers: []layer,
@@ -53,6 +54,8 @@ export fn scene_new(width: f32 = 620f32, height: f32 = 877f32) *scene = {
 
         paper          = make_rect([0f32, 0f32], width, height, [1f32, 1f32, 1f32, 1f32]),
         selection      = null,
+
+        selected       = [],
         selection_mask = [],
         layers         = [],
     });
@@ -124,6 +127,12 @@ fn _scene_draw(this: *node) void = {
 
     for (const rect .. this.selection_mask) {
         rect.draw(rect);
+    };
+
+    for (const node .. this.selected) {
+        if (node._type == node_type::BEZIER) {
+            draw_bezier_controls(node: *bezier);
+        };
     };
 
     gl::msaa_end();
