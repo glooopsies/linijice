@@ -45,6 +45,7 @@ export fn init(resources: str) void = {
 export fn finalize() void = {
     finalize_rect();
     finalize_ellipse();
+    finalize_bezier();
 
     scene_free();
     gl::msaa_finalize();

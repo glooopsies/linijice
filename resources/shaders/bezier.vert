@@ -10,17 +10,18 @@ layout (location = 2) out vec2 out_control;
 uniform mat3 scene_transform;
 uniform mat3 screen_transform;
 uniform float height;
+uniform vec2 translate; 
 
 void main() {
-    vec2 point_pos = (scene_transform * vec3(in_point.xy, 1.0)).xy;
+    vec2 point_pos = (scene_transform * vec3(in_point + translate, 1.0)).xy;
     out_screen_point = vec2(point_pos.x, height - point_pos.y);
 
-    vec2 Position = (screen_transform * vec3(point_pos.xy, 1.0)).xy;
+    vec2 Position = (screen_transform * vec3(point_pos, 1.0)).xy;
     gl_Position = vec4(Position, 0.0, 1.0);
 
 
-    vec2 control_pos = (scene_transform * vec3(in_control.xy, 1.0)).xy;
+    vec2 control_pos = (scene_transform * vec3(in_control + translate, 1.0)).xy;
     out_screen_control = vec2(control_pos.x, height - control_pos.y);
 
-    out_control = (screen_transform * vec3(control_pos.xy, 1.0)).xy;
+    out_control = (screen_transform * vec3(control_pos, 1.0)).xy;
 }

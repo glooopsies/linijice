@@ -77,7 +77,15 @@ fn select_up(vec: math::vec2) void = {
 
     if (selection_move) {
         for (const node .. scene.selected) {
-            node.position = math::vec2add(node.position, node.translation);
+            if (node._type == nodes::node_type::BEZIER) {
+                let node = node: *nodes::bezier;
+                for (let handle &.. node.handles) {
+                    handle.point = math::vec2add(handle.point, node.translation);
+                    handle.control_point = math::vec2add(handle.control_point, node.translation);
+                };
+            } else {
+                node.position = math::vec2add(node.position, node.translation);
+            };
             node.translation = [0f32, 0f32];
         };
 

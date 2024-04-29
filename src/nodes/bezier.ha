@@ -1,5 +1,6 @@
 use strings;
 use fmt;
+use math;
 use io;
 use errors;
 use strconv;
@@ -114,6 +115,9 @@ fn draw_bezier(this: *node) void = {
     const location = gl::glGetUniformLocation(bezier_program, c::nulstr("stroke\0"): nullable *const i8);
     gl::glUniform1f(location, get_scene().scale[0]*this.stroke);
 
+    const location = gl::glGetUniformLocation(bezier_program, c::nulstr("translate\0"): nullable *const i8);
+    gl::glUniform2f(location, this.translation[0], this.translation[1]);
+
     gl::glDrawArrays(gl::GL_LINE_STRIP, 0, len(this.handles): i32);
 };
 
@@ -126,6 +130,9 @@ fn draw_bezier_controls(this: *node) void = {
     gl::glBindVertexArray(bezier_VAO);
 
     scene_set_uniforms(bezier_point_program);
+
+    const location = gl::glGetUniformLocation(bezier_point_program, c::nulstr("translate\0"): nullable *const i8);
+    gl::glUniform2f(location, this.translation[0], this.translation[1]);
 
     gl::glDrawArrays(gl::GL_POINTS, 0, len(this.handles): i32);
 };
@@ -152,18 +159,112 @@ fn finalize_bezier() void = {
     gl::glDeleteVertexArrays(1, &bezier_VAO);
     gl::glDeleteBuffers(1, &bezier_VBO);
     gl::glDeleteProgram(bezier_program);
+    gl::glDeleteProgram(bezier_point_program);
+};
+
+fn bezier_value(poly: [4]f32, t: f32) f32 = {
+    return poly[0] * (1f32 - t) * (1f32 - t) * (1f32 - t) + 3f32 * poly[1] * t * (1f32 - t) * (1f32 - t)
+           + 3f32 * poly[2] * t * t * (1f32 - t) + poly[3] * t * t * t;
+};
+
+fn bezier_min_max(start: point, control1: point, control2: point, end: point) [2]point = {    
+    let a = -3f32 * start[0] + 9f32 * control1[0] - 9f32 * control2[0] + 3f32 * end[0];
+    let b = 6f32 * start[0] - 12f32 * control1[0] + 6f32 * control2[0];
+    let c = 3f32 * control1[0] - 3f32 * start[0];
+        
+    let dist = b * b - 4f32 * a * c;
+    let x_min = start[0];
+    let x_max = start[0];
+    if (end[0] < x_min) {
+        x_min = end[0];
+    };
+    if (end[0] > x_max) {
+        x_max = end[0];
+    };
+
+    if (dist >= 0f32) {
+        let t1 = (-b + math::sqrtf64(dist): f32) / (2f32 * a);
+        if (t1 > 0f32 && t1 < 1f32) {
+            let x1 = bezier_value([start[0], control1[0], control2[0], end[0]], t1);
+            if (x1 < x_min) {
+                x_min = x1;
+            };
+            if (x1 > x_max) {
+                x_max = x1;
+            };
+        };
+
+        let t2 = (-b - math::sqrtf64(dist): f32) / (2f32 * a);
+        if (t2 > 0f32 && t2 < 1f32) {
+            let x2 = bezier_value([start[0], control1[0], control2[0], end[0]], t2);
+            if (x2 < x_min) {
+                x_min = x2;
+            };
+            if (x2 > x_max) {
+                x_max = x2;
+            };
+        };
+    };
+
+    a = -3f32 * start[1] + 9f32 * control1[1] - 9f32 * control2[1] + 3f32 * end[1];
+    b = 6f32 * start[1] - 12f32 * control1[1] + 6f32 * control2[1];
+    c = 3f32 * control1[1] - 3f32 * start[1];
+      
+    dist = b * b - 4f32 * a * c;
+    let y_min = start[1];
+    let y_max = start[1];
+    if (end[1] < y_min) {
+        y_min = end[1];
+    };
+    if (end[1] > y_max) {
+        y_max = end[1];
+    };
+
+    if (dist >= 0f32) {
+        let t1 = (-b + math::sqrtf64(dist): f32) / (2f32 * a);
+        if (t1 > 0f32 && t1 < 1f32) {
+            let y1 = bezier_value([start[1], control1[1], control2[1], end[1]], t1);
+            if (y1 < y_min) {
+                y_min = y1;
+            };
+            if (y1 > y_max) {
+                y_max = y1;
+            };
+        };
+
+        let t2 = (-b - math::sqrtf64(dist): f32) / (2f32 * a);
+        if (t2 > 0f32 && t2 < 1f32) {
+            let y2 = bezier_value([start[1], control1[1], control2[1], end[1]], t2);
+            if (y2 < y_min) {
+                y_min = y2;
+            };
+            if (y2 > y_max) {
+                y_max = y2;
+            };
+        };
+    };
+
+    return [[x_min, y_min], [x_max, y_max]];
 };
 
 fn bezier_bounding_box(this: *node) [2]math::vec2 = {
     const this = this: *bezier;
-    const end_point: math::vec2 = [
-        this.position[0] + 50f32,
-        this.position[1] + 50f32,
-    ];
+    let bounding_point_min: point = this.handles[0].point;
+    let bounding_point_max: point = this.handles[0].point;
+
+    for (let i = 0z; i < len(this.handles) - 1; i = i+1) {
+        const other = math::vec2add(
+            math::vec2fmul(2f32, this.handles[i+1].point),
+            math::vec2fmul(-1f32, this.handles[i+1].control_point)
+        );
+        let points = bezier_min_max(this.handles[i].point, this.handles[i].control_point, other, this.handles[i+1].point);
+        bounding_point_min = math::vec2min(bounding_point_min, points[0]);
+        bounding_point_max = math::vec2max(bounding_point_max, points[1]);
+    };
 
     return [
-        math::vec2min(this.position, end_point),
-        math::vec2max(this.position, end_point),
+        bounding_point_min, 
+        bounding_point_max,
     ];
 };
 
