@@ -1,8 +1,11 @@
 # Linijice - vector art program
 
-Projekat iz predmeta programske paradigme na Matematičkom fakultetu. 
+Projekat iz predmeta programske paradigme na Matematičkom fakultetu.
+
 Program je razvijen u programskom jeziku [hare](https://harelang.org) i omogućava vektorsku obradu sklika.
+
 Podržane akcije su kreiranje pravougaonika, elipsi i bezijeovih krivih, njihovo selektovanje, menanje boja, pomeranje i brisanje.
+
 Dodatno, program omogućava čuvanje i učitavanje prethodno sačuvanog sadržaja.
 
 ## Pokretanje:
