@@ -30,7 +30,7 @@ export fn deselect() void = {
     };
 };
 
-fn select_down(point: math::vec2) void = {
+fn select_down(point: math::vec2, uniform: bool = false) void = {
     let scene = nodes::get_scene();
 
     selection_move = false;
@@ -52,7 +52,7 @@ fn select_down(point: math::vec2) void = {
     };
 };
 
-fn select_move(vec: math::vec2) void = {
+fn select_move(vec: math::vec2, uniform: bool = false) void = {
     if (selection_move) {
         let scene = nodes::get_scene();
 
@@ -72,7 +72,7 @@ fn select_move(vec: math::vec2) void = {
     };
 };
 
-fn select_up(vec: math::vec2) void = {
+fn select_up(vec: math::vec2, uniform: bool = false) void = {
     let scene = nodes::get_scene();
 
     if (selection_move) {

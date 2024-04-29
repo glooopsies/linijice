@@ -9,9 +9,9 @@ use src::math;
 use src::nodes;
 
 type tool = struct {
-    mouse_down:      *fn(point: math::vec2) void,
-    mouse_move:      *fn(vec: math::vec2)   void,
-    mouse_up:        *fn(vec: math::vec2)   void,
+    mouse_down:      *fn(point: math::vec2, uniform: bool = false) void,
+    mouse_move:      *fn(vec: math::vec2, uniform: bool = false)   void,
+    mouse_up:        *fn(vec: math::vec2, uniform: bool = false)   void,
     transform_point: bool,
     transform_move:  bool,
 };
@@ -50,17 +50,17 @@ export fn init(builder: *gtk4::Builder) void = {
     };
 };
 
-export fn mouse_down(point: math::vec2) void = {
+export fn mouse_down(point: math::vec2, uniform: bool = false) void = {
     let vec: math::vec3 = math::vec2to3(point);
 
     if (active_tool.transform_point) {
         vec = math::mat3vec(math::mat3inv(nodes::scene_transform()), vec);
     };
 
-    active_tool.mouse_down(math::vec3to2(vec));
+    active_tool.mouse_down(math::vec3to2(vec), uniform);
 };
 
-export fn mouse_move(vec: math::vec2) void = {
+export fn mouse_move(vec: math::vec2, uniform: bool = false) void = {
     let vec: math::vec3 = math::vec2to3(vec);
 
     if (active_tool.transform_move) {
@@ -72,10 +72,10 @@ export fn mouse_move(vec: math::vec2) void = {
         );
     };
 
-    active_tool.mouse_move(math::vec3to2(vec));
+    active_tool.mouse_move(math::vec3to2(vec), uniform);
 };
 
-export fn mouse_up(vec: math::vec2) void = {
+export fn mouse_up(vec: math::vec2, uniform: bool = false) void = {
     let vec: math::vec3 = math::vec2to3(vec);
 
     if (active_tool.transform_move) {
@@ -87,5 +87,5 @@ export fn mouse_up(vec: math::vec2) void = {
         );
     };
 
-    active_tool.mouse_up(math::vec3to2(vec));
+    active_tool.mouse_up(math::vec3to2(vec), uniform);
 };

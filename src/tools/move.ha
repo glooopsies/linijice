@@ -11,18 +11,18 @@ const move = tool {
 
 let original_translation: math::vec2 = [0f32, 0f32];
 
-export fn move_down(point: math::vec2) void = {
+export fn move_down(point: math::vec2, uniform: bool = false) void = {
     const active_scene = nodes::get_scene();
     original_translation = active_scene.translation;
 };
 
-export fn move_move(vec: math::vec2) void = {
+export fn move_move(vec: math::vec2, uniform: bool = false) void = {
     const active_scene = nodes::get_scene();
 
     active_scene.translation = math::vec2add(original_translation, vec);
 };
 
-export fn move_up(vec: math::vec2) void = void;
+export fn move_up(vec: math::vec2, uniform: bool = false) void = void;
 
 const scroll_speed_wheel = -40f32;
 export fn scroll_wheel(vec: math::vec2) void = {

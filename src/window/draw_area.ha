@@ -75,36 +75,39 @@ fn drag_begin(gesture: *gtk4::GestureDrag, x: f64, y: f64, area: *gtk4::GLArea) 
 
 	const state = gtk4::event_controller_get_current_event_state(gesture: *gtk4::EventController);
 
-	if (state & gdk4::ModifierType::CONTROL_MASK > 0) {
+	if (state & gdk4::ModifierType::ALT_MASK > 0) {
 		tools::move_down([x: f32, y: f32]);
 		return;
 	};
-
-	tools::mouse_down([x: f32, y: f32]);
+	
+	const ctrl = state & gdk4::ModifierType::CONTROL_MASK > 0;
+	tools::mouse_down([x: f32, y: f32], ctrl);
 };
 
 fn drag_update(gesture: *gtk4::GestureDrag, x: f64, y: f64, area: *gtk4::GLArea) void = {
 	defer gtk4::glarea_queue_render(area);
 
 	const state = gtk4::event_controller_get_current_event_state(gesture: *gtk4::EventController);
-	if (state & gdk4::ModifierType::CONTROL_MASK > 0) {
+	if (state & gdk4::ModifierType::ALT_MASK > 0) {
 		tools::move_move([x: f32, y: f32]);
 		return;
 	};
 
-	tools::mouse_move([x: f32, y: f32]);
+	const ctrl = state & gdk4::ModifierType::CONTROL_MASK > 0;
+	tools::mouse_move([x: f32, y: f32], ctrl);
 };
 
 fn drag_end(gesture: *gtk4::GestureDrag, x: f64, y: f64, area: *gtk4::GLArea) void = {
 	defer gtk4::glarea_queue_render(area);
 
 	const state = gtk4::event_controller_get_current_event_state(gesture: *gtk4::EventController);
-	if (state & gdk4::ModifierType::CONTROL_MASK > 0) {
+	if (state & gdk4::ModifierType::ALT_MASK > 0) {
 		tools::move_up([x: f32, y: f32]);
 		return;
 	};
 
-	tools::mouse_up([x: f32, y: f32]);
+	const ctrl = state & gdk4::ModifierType::CONTROL_MASK > 0;
+	tools::mouse_up([x: f32, y: f32], ctrl);
 };
 
 

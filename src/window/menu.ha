@@ -10,6 +10,13 @@ use gtk4;
 
 use src::nodes;
 
+fn new_file(button: *gio::SimpleAction, parameter: *glib::Variant, user_data: *opaque) void = {
+    defer rerender();
+    free(nodes::active_scene);
+    nodes::active_scene = nodes::scene_new();
+    append(nodes::active_scene.layers, []);
+};
+
 fn on_open_file(source_object: *opaque, res: *gio::AsyncResult, file_dialog: *gtk4::FileDialog) void = {
     defer gobject::object_unref(file_dialog);
     let err = null: *glib::Error;
@@ -71,6 +78,12 @@ fn menu_init(builder: *gtk4::Builder) void = {
 
     const file_action_group = gio::simple_action_group_new();
     gtk4::widget_insert_action_group(app_menu: *gtk4::Widget, c::nulstr("file\0"), file_action_group: *gio::ActionGroup);
+
+    const new_action = gio::simple_action_new(c::nulstr("new\0"), null: *glib::VariantType);
+    gio::action_map_add_action(file_action_group: *gio::ActionMap, new_action: *gio::Action);
+    g::signal_connect(new_action,
+        c::nulstr("activate\0"),
+        &new_file: gobject::Callback, null);
 
     const open_action = gio::simple_action_new(c::nulstr("open\0"), null: *glib::VariantType);
     gio::action_map_add_action(file_action_group: *gio::ActionMap, open_action: *gio::Action);

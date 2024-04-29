@@ -11,7 +11,7 @@ const bezier = tool {
 
 let bezier_last: nullable *nodes::bezier = null;
 
-fn bezier_down(point: math::vec2) void = {
+fn bezier_down(point: math::vec2, uniform: bool = false) void = {
     if (bezier_last == null) {
         deselect();
         bezier_last = nodes::make_bezier([0f32, 0f32], color, stroke_width);
@@ -27,13 +27,13 @@ fn bezier_down(point: math::vec2) void = {
     });
 };
 
-fn bezier_move(vec: math::vec2) void = {
+fn bezier_move(vec: math::vec2, uniform: bool = false) void = {
     let last = bezier_last: *nodes::bezier;
     let last_handle = &last.handles[len(last.handles)-1];
     last_handle.control_point = math::vec2add(last_handle.point, vec);
 };
 
-fn bezier_up(vec: math::vec2) void = {
+fn bezier_up(vec: math::vec2, uniform: bool = false) void = {
     let last = bezier_last: *nodes::bezier;
     let last_handle = &last.handles[len(last.handles)-1];
     last_handle.control_point = math::vec2add(last_handle.point, vec);

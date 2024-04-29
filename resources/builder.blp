@@ -121,6 +121,11 @@ Adw.ApplicationWindow window {
 menu primary_menu {
   section {
     item {
+      label: _('_New');
+      action: 'file.new';
+    }
+
+    item {
       label: _('_Open');
       action: 'file.open';
     }
@@ -132,11 +137,6 @@ menu primary_menu {
   }
 
   section {
-    item {
-      label: _('_Preferences');
-      action: 'app.preferences';
-    }
-
     item {
       label: _('_Keyboard Shortcuts');
       action: 'win.show-help-overlay';

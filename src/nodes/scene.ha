@@ -22,7 +22,7 @@ export type scene = struct {
     layers: []layer,
 };
 
-let active_scene = null: *scene;
+export let active_scene = null: *scene;
 
 fn scene_init(resources: str) void = {
     gl::glEnable(gl::GL_BLEND);
