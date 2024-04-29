@@ -182,7 +182,7 @@ fn bezier_save(this: *node, stream: *io::stream, prefix: str = "") void = {
 
     const box = this.bounding_box(this);
 
-    fmt::fprintf(stream, "{}<path stroke=\"{}\" stroke-width=\"{}\" fill=\"none\" d=\"M {},{} C ", 
+    fmt::fprintf(stream, "{}<path stroke=\"{}\" stroke-width=\"{}\" fill=\"none\" d=\"M {},{}", 
         prefix, math::vec4tohex(this.color), this.stroke,
         this.handles[0].point[0], this.handles[0].point[1])!;
 
@@ -194,7 +194,7 @@ fn bezier_save(this: *node, stream: *io::stream, prefix: str = "") void = {
             math::vec2fmul(-1f32, handle2.control_point)
         );
         fmt::fprintf(stream, 
-            "{},{} {},{} {},{} ",
+            " C {},{} {},{} {},{}",
             handle1.control_point[0], handle1.control_point[1],
             other[0], other[1],
             handle2.point[0], handle2.point[1],
