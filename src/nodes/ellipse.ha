@@ -81,13 +81,16 @@ fn draw_ellipse(this: *node) void = {
     const location = gl::glGetUniformLocation(ellipse_program, c::nulstr("color\0"): nullable *const i8);
     gl::glUniform4f(location, this.color[0], this.color[1], this.color[2], this.color[3]);
 
+    const location = gl::glGetUniformLocation(ellipse_program, c::nulstr("translate\0"): nullable *const i8);
+    gl::glUniform2f(location, this.translation[0], this.translation[1]);
+
     gl::glDrawArrays(gl::GL_LINES, 0, 2);
 };
 
 fn ellipse_upload(this: *ellipse) void = {
     let array = [
-        this.position[0] + this.translation[0], this.position[1] + this.translation[1],
-        this.position[0] + this.translation[0] + this.r1, this.position[1] + this.translation[1] + this.r2,
+        this.position[0], this.position[1],
+        this.position[0] + this.r1, this.position[1] + this.r2,
     ];
 
     gl::glBindVertexArray(ellipse_VAO);

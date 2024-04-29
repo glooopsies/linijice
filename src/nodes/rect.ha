@@ -87,13 +87,16 @@ fn draw_rect(this: *node) void = {
     const location = gl::glGetUniformLocation(rect_program, c::nulstr("radius\0"): nullable *const i8);
     gl::glUniform1f(location, get_scene().scale[0]*this.radius);
 
+    const location = gl::glGetUniformLocation(rect_program, c::nulstr("translate\0"): nullable *const i8);
+    gl::glUniform2f(location, this.translation[0], this.translation[1]);
+
     gl::glDrawArrays(gl::GL_LINES, 0, 2);
 };
 
 fn rect_upload(this: *rect) void = {
     let array = [
-        this.position[0] + this.translation[0], this.position[1] + this.translation[1],
-        this.position[0] + this.translation[0] + this.w, this.position[1] + this.translation[1] + this.h,
+        this.position[0], this.position[1],
+        this.position[0] + this.w, this.position[1] + this.h,
     ];
 
     gl::glBindVertexArray(rect_VAO);

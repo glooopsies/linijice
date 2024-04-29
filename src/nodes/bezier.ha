@@ -168,83 +168,56 @@ fn bezier_value(poly: [4]f32, t: f32) f32 = {
 };
 
 fn bezier_min_max(start: point, control1: point, control2: point, end: point) [2]point = {    
-    let a = -3f32 * start[0] + 9f32 * control1[0] - 9f32 * control2[0] + 3f32 * end[0];
-    let b = 6f32 * start[0] - 12f32 * control1[0] + 6f32 * control2[0];
-    let c = 3f32 * control1[0] - 3f32 * start[0];
-        
-    let dist = b * b - 4f32 * a * c;
-    let x_min = start[0];
-    let x_max = start[0];
-    if (end[0] < x_min) {
-        x_min = end[0];
-    };
-    if (end[0] > x_max) {
-        x_max = end[0];
-    };
+    const ax = -3f32 * start[0] + 9f32 * control1[0] - 9f32 * control2[0] + 3f32 * end[0];
+    const bx = 6f32 * start[0] - 12f32 * control1[0] + 6f32 * control2[0];
+    const cx = 3f32 * control1[0] - 3f32 * start[0];  
 
-    if (dist >= 0f32) {
-        let t1 = (-b + math::sqrtf64(dist): f32) / (2f32 * a);
+    const ay = -3f32 * start[1] + 9f32 * control1[1] - 9f32 * control2[1] + 3f32 * end[1];
+    const by = 6f32 * start[1] - 12f32 * control1[1] + 6f32 * control2[1];
+    const cy = 3f32 * control1[1] - 3f32 * start[1];
+    
+    let distx = bx * bx - 4f32 * ax * cx;
+    let disty = by * by - 4f32 * ay * cy;
+    
+    let x: []f32 = [];
+    defer free(x);
+    append(x, start[0]);
+    append(x, end[0]);
+
+    let y: []f32 = [];
+    defer free(y);
+    append(y, start[1]);
+    append(y, end[1]);
+
+    if (distx >= 0f32) {
+        let t1 = (-bx + math::sqrtf64(distx): f32) / (2f32 * ax);
         if (t1 > 0f32 && t1 < 1f32) {
             let x1 = bezier_value([start[0], control1[0], control2[0], end[0]], t1);
-            if (x1 < x_min) {
-                x_min = x1;
-            };
-            if (x1 > x_max) {
-                x_max = x1;
-            };
+            append(x, x1);
         };
 
-        let t2 = (-b - math::sqrtf64(dist): f32) / (2f32 * a);
+        let t2 = (-bx - math::sqrtf64(distx): f32) / (2f32 * ax);
         if (t2 > 0f32 && t2 < 1f32) {
             let x2 = bezier_value([start[0], control1[0], control2[0], end[0]], t2);
-            if (x2 < x_min) {
-                x_min = x2;
-            };
-            if (x2 > x_max) {
-                x_max = x2;
-            };
+            append(x, x2);
         };
     };
 
-    a = -3f32 * start[1] + 9f32 * control1[1] - 9f32 * control2[1] + 3f32 * end[1];
-    b = 6f32 * start[1] - 12f32 * control1[1] + 6f32 * control2[1];
-    c = 3f32 * control1[1] - 3f32 * start[1];
-      
-    dist = b * b - 4f32 * a * c;
-    let y_min = start[1];
-    let y_max = start[1];
-    if (end[1] < y_min) {
-        y_min = end[1];
-    };
-    if (end[1] > y_max) {
-        y_max = end[1];
-    };
-
-    if (dist >= 0f32) {
-        let t1 = (-b + math::sqrtf64(dist): f32) / (2f32 * a);
+    if (disty >= 0f32) {
+        let t1 = (-by + math::sqrtf64(disty): f32) / (2f32 * ay);
         if (t1 > 0f32 && t1 < 1f32) {
             let y1 = bezier_value([start[1], control1[1], control2[1], end[1]], t1);
-            if (y1 < y_min) {
-                y_min = y1;
-            };
-            if (y1 > y_max) {
-                y_max = y1;
-            };
+            append(y, y1);
         };
 
-        let t2 = (-b - math::sqrtf64(dist): f32) / (2f32 * a);
+        let t2 = (-by - math::sqrtf64(disty): f32) / (2f32 * ay);
         if (t2 > 0f32 && t2 < 1f32) {
             let y2 = bezier_value([start[1], control1[1], control2[1], end[1]], t2);
-            if (y2 < y_min) {
-                y_min = y2;
-            };
-            if (y2 > y_max) {
-                y_max = y2;
-            };
+            append(y, y2);
         };
     };
 
-    return [[x_min, y_min], [x_max, y_max]];
+    return [[math::min(x...), math::min(y...)], [math::max(x...), math::max(y...)]];
 };
 
 fn bezier_bounding_box(this: *node) [2]math::vec2 = {

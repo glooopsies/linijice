@@ -15,7 +15,7 @@ const selection_color: math::vec4 = [0f32, 0.5f32, 0.5f32, 0.3f32];
 
 let selection_move = false;
 
-fn deselect() void = {
+export fn deselect() void = {
     let scene = nodes::get_scene();
 
     bezier_last = null;

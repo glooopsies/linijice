@@ -107,6 +107,21 @@ fn drag_end(gesture: *gtk4::GestureDrag, x: f64, y: f64, area: *gtk4::GLArea) vo
 	tools::mouse_up([x: f32, y: f32]);
 };
 
+
+fn drag_begin_right(gesture: *gtk4::GestureDrag, x: f64, y: f64, area: *gtk4::GLArea) void = {
+	defer gtk4::glarea_queue_render(area);
+
+	tools::deselect();
+};
+
+fn drag_update_right(gesture: *gtk4::GestureDrag, x: f64, y: f64, area: *gtk4::GLArea) void = {
+	defer gtk4::glarea_queue_render(area);
+};
+
+fn drag_end_right(gesture: *gtk4::GestureDrag, x: f64, y: f64, area: *gtk4::GLArea) void = {
+	defer gtk4::glarea_queue_render(area);
+};
+
 fn scroll(gesture: *gtk4::EventControllerScroll, x: f64, y: f64, area: *gtk4::GLArea) void = {
 	defer gtk4::glarea_queue_render(area);
 
@@ -209,6 +224,21 @@ fn draw_area_init(builder: *gtk4::Builder, res: str) void = {
         c::nulstr("drag-end\0"),
         &drag_end: gobject::Callback, gl_area);
 
+	const drag_gesture_right = gtk4::gesture_drag_new();
+	gtk4::gesture_single_set_button(drag_gesture_right: *gtk4::GestureSingle, 3);
+	gtk4::widget_add_controller(gl_area, drag_gesture_right: *gtk4::EventController);
+
+	g::signal_connect(drag_gesture_right,
+        c::nulstr("drag-begin\0"),
+        &drag_begin_right: gobject::Callback, gl_area);
+
+	g::signal_connect(drag_gesture_right,
+        c::nulstr("drag-update\0"),
+        &drag_update_right: gobject::Callback, gl_area);
+
+	g::signal_connect(drag_gesture_right,
+        c::nulstr("drag-end\0"),
+        &drag_end_right: gobject::Callback, gl_area);
 
 	const scroll_event = gtk4::event_controller_scroll_new(
 		gtk4::EventControllerScrollFlags::BOTH_AXES
