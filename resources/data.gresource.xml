@@ -9,6 +9,7 @@
     <file alias="select-icon-symbolic.svg">icons/select-icon-symbolic.svg</file>
     <file alias="corner-radius-symbolic.svg">icons/corner-radius-symbolic.svg</file>
     <file alias="integral-symbolic.svg">icons/integral-symbolic.svg</file>
+    <file alias="trash-symbolic.svg">icons/trash-symbolic.svg</file>
   </gresource>
   <gresource prefix="/rs/ac/bg/matf/linijice">
     <file>style.css</file>

@@ -30,6 +30,12 @@ fn stroke_changed(self: *gtk4::SpinButton, data: *opaque) void = {
     tools::update_stroke();
 };
 
+fn delete_click(self: *gtk4::Button, data: *opaque) void = {
+	defer rerender();
+
+	tools::delete_selection();
+};
+
 fn tools_init(builder: *gtk4::Builder) void = {
     const color_button = gtk4::builder_get_object(
 		builder,
@@ -76,4 +82,13 @@ fn tools_init(builder: *gtk4::Builder) void = {
     g::signal_connect(radius,
         c::nulstr("value-changed\0"),
         &radius_changed: gobject::Callback, null);
+
+	const delete_button = gtk4::builder_get_object(
+        builder,
+        c::nulstr("delete\0")
+    ): *gtk4::Button;
+
+    g::signal_connect(delete_button,
+        c::nulstr("clicked\0"),
+        &delete_click: gobject::Callback, null);
 };
