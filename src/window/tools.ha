@@ -23,6 +23,13 @@ fn radius_changed(self: *gtk4::SpinButton, data: *opaque) void = {
     tools::update_radius();
 };
 
+fn stroke_changed(self: *gtk4::SpinButton, data: *opaque) void = {
+	defer rerender();
+
+    tools::stroke_width = gtk4::spin_button_get_value(self): f32;
+    tools::update_stroke();
+};
+
 fn tools_init(builder: *gtk4::Builder) void = {
     const color_button = gtk4::builder_get_object(
 		builder,
@@ -51,6 +58,15 @@ fn tools_init(builder: *gtk4::Builder) void = {
 		c::nulstr("notify::rgba\0"),
 		&color_changed: gobject::Callback, null
 	);
+
+    const stroke = gtk4::builder_get_object(
+        builder,
+        c::nulstr("stroke_width\0")
+    ): *gtk4::SpinButton;
+
+    g::signal_connect(stroke,
+        c::nulstr("value-changed\0"),
+        &stroke_changed: gobject::Callback, null);
 
     const radius = gtk4::builder_get_object(
         builder,

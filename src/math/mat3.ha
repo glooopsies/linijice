@@ -41,7 +41,7 @@ export fn mat3eq(m1: mat3, m2: mat3) bool = {
 
 export fn mat3add(matrices: mat3...) mat3 = {
     let ret: mat3 = [[0f32...]...];
-    for(let matrix &.. matrices){
+    for (let matrix &.. matrices) {
         for (let i = 0z; i < len(ret); i += 1) {
             for (let j = 0z; j < len(ret[0]); j += 1) {
                 ret[i][j] += matrix[i][j];

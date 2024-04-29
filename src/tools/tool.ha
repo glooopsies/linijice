@@ -25,6 +25,8 @@ const tools = [
 ];
 
 export let color: math::vec4 = [0f32, 0f32, 0f32, 1f32];
+export let stroke_color: math::vec4 = [0f32, 0f32, 0f32, 1f32];
+export let stroke_width: f32 = 2f32;
 let active_tool = &rect;
 
 fn toggled(button: *gtk4::ToggleButton, data: *opaque) void = {

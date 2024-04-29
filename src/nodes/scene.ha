@@ -182,6 +182,8 @@ fn layer_load(parser: *xml::parser) (layer | errors::error | strconv::error) = {
                         append(layer, rect_load(parser)?);
                     case "ellipse" =>
                         append(layer, ellipse_load(parser)?);
+                    case "path" =>
+                        append(layer, bezier_load(parser)?);
                     case =>
                         return errors::invalid;
                 };

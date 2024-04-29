@@ -13,3 +13,11 @@ export fn update_radius() void = {
         };
     };
 };
+
+export fn update_stroke() void = {
+    for (let node .. selected) {
+        if (node._type == nodes::node_type::BEZIER) {
+            (node: *nodes::bezier).stroke = stroke_width;
+        };
+    };
+};

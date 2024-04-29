@@ -20,6 +20,7 @@ export type handle = struct {
 
 export type bezier = struct {
     node,
+    stroke: f32,
     handles: []handle,
 };
 
@@ -29,6 +30,7 @@ let bezier_point_program = 0u;
 export fn make_bezier(
     position: math::vec2 = [0f32, 0f32],
     color: math::vec4 = [0f32, 0f32, 0f32, 0f32],
+    stroke: f32 = 1f32,
     handles: []handle = [],
 ) *bezier = {
     return alloc(bezier {
@@ -43,6 +45,7 @@ export fn make_bezier(
         draw         = &draw_bezier,
         save         = &bezier_save,
 
+        stroke  = stroke,
         handles = handles,
     });
 };
@@ -68,7 +71,6 @@ fn init_bezier(resources: str) void = {
     case let shader: uint => yield shader;
     case let err: gl::error => gl::check_error(err);
     };
-
 
 
     const vert_path = strings::concat(resources, "/shaders/bezier.vert");
@@ -107,10 +109,10 @@ fn draw_bezier(this: *node) void = {
     scene_set_uniforms(bezier_program);
 
     const location = gl::glGetUniformLocation(bezier_program, c::nulstr("color\0"): nullable *const i8);
-    gl::glUniform4f(location, this.color[0], this.color[1], this.color[2], this.color[3]);
+    gl::glUniform4f(location, this.color[0], this.color[1], this.color[2], 1f32);
 
     const location = gl::glGetUniformLocation(bezier_program, c::nulstr("stroke\0"): nullable *const i8);
-    gl::glUniform1f(location, get_scene().scale[0]*5f32);
+    gl::glUniform1f(location, get_scene().scale[0]*this.stroke);
 
     gl::glDrawArrays(gl::GL_LINE_STRIP, 0, len(this.handles): i32);
 
@@ -173,12 +175,124 @@ fn bezier_save(this: *node, stream: *io::stream, prefix: str = "") void = {
 
     const box = this.bounding_box(this);
 
-    fmt::fprintfln(
-        stream,
-        "{}<path />",
-        prefix)!;
+    fmt::fprintf(stream, "{}<path stroke=\"{}\" stroke-width=\"{}\" fill=\"none\" d=\"M {},{} C ", 
+        prefix, math::vec4tohex(this.color), this.stroke,
+        this.handles[0].point[0], this.handles[0].point[1])!;
+
+    for (let i = 0z; i < len(this.handles) - 1; i += 1) {
+        const handle1 = this.handles[i];
+        const handle2 = this.handles[i + 1];
+        const other = math::vec2add(
+            math::vec2fmul(2f32, handle2.point),
+            math::vec2fmul(-1f32, handle2.control_point)
+        );
+        fmt::fprintf(stream, 
+            "{},{} {},{} {},{} ",
+            handle1.control_point[0], handle1.control_point[1],
+            other[0], other[1],
+            handle2.point[0], handle2.point[1],
+        )!;
+    };
+
+    fmt::fprintfln(stream, "\" />")!;
+};
+
+fn parse_path(_path: str) ([]handle | errors::error | strconv::error) = {
+    const _split = strings::split(_path, " ");
+    defer free(_split);
+
+    let split = []: []str;
+    defer free(split);
+    for (const part &.. _split) {
+        const _split = strings::split(*part, ",");
+        defer free(_split);
+        append(split, _split...);
+    };
+
+    if (len(split) < 3) {
+        return errors::invalid;
+    };
+
+    if (strings::compare(split[0], "M") != 0) {
+        return errors::invalid;
+    };
+
+    let path = []: []handle;
+
+    append(path, handle {
+        point = [
+            strconv::stof32(split[1])?,
+            strconv::stof32(split[2])?
+        ],
+        ...
+    });
+
+    let i = 3z;
+    let point = 1z;
+    for (i < len(split)) {
+        switch(split[i]) {
+            case "C" =>
+                if (i + 6 >= len(split)) {
+                    return errors::invalid;
+                };
+
+                path[point - 1].control_point[0] = strconv::stof32(split[i + 1])?;
+                path[point - 1].control_point[1] = strconv::stof32(split[i + 2])?;
+
+                append(path, handle {
+                    point = [
+                        strconv::stof32(split[i + 5])?,
+                        strconv::stof32(split[i + 6])?,
+                    ],
+                    ...
+                });
+
+                point += 1;
+                i += 7;
+            case => return errors::invalid;
+        };
+    };
+
+    const x = path[point - 1].point[0];
+    const y = path[point - 1].point[1];
+
+    const cx = strconv::stof32(split[len(split) - 4])?;
+    const cy = strconv::stof32(split[len(split) - 3])?;
+
+    path[point - 1].control_point = [
+        2f32 * x - cx,
+        2f32 * y - cy,
+    ];
+
+    return path;
 };
 
 fn bezier_load(parser: *xml::parser) (*bezier | errors::error | strconv::error) = {
+    let path = make_bezier();
+
+    for (true) {
+        const token = xml::scan(parser)!;
+        match(token) {
+            case let start: xml::elementstart =>
+                return errors::invalid;
+            case let end: xml::elementend =>
+                if (strings::compare(end, "path") != 0) {
+                    free(path);
+                    return errors::invalid;
+                };
+
+                return path;
+            case let attr: xml::attribute =>
+                switch (attr.0) {
+                    case "stroke"       => path.color   = math::hextovec4(attr.1)?;
+                    case "stroke-width" => path.stroke  = strconv::stof32(attr.1)?;
+                    case "d"            => path.handles = parse_path(attr.1)?;
+                    case => yield;
+                };
+            case void => break;
+            case => yield;
+        };
+    };
+
     return errors::invalid;
 };

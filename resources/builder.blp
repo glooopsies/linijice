@@ -72,10 +72,6 @@ Adw.ApplicationWindow window {
         halign: center;
         styles ["background", "toolbar"]
 
-        Image {
-          icon-name: "square-filled";
-        }
-
         ColorDialogButton tool_color {}
 
         Separator {
@@ -86,13 +82,11 @@ Adw.ApplicationWindow window {
           icon-name: "integral";
         }
 
-        ColorDialogButton stroke_color {}
-
         SpinButton stroke_width {
           adjustment: Adjustment {
             lower: 0;
             upper: 1000.00;
-            value: 0.00;
+            value: 2.00;
             step-increment: 1;
           };
           digits: 2;
