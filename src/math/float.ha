@@ -1,3 +1,5 @@
+use math;
+
 export fn min(array: f32...) f32 = {
     let ret = array[0];
     for (const x .. array) {
@@ -33,3 +35,5 @@ export fn max(array: f32...) f32 = {
 
     assert(max(f...) == f1, "max function incorrect");
 };
+
+export fn sqrtf32(f: f32) f32 = math::sqrtf64(f: f64): f32;

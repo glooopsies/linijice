@@ -56,12 +56,12 @@ export fn vec3norm(v1: vec3) f32 = {
         ret += v1[i] * v1[i];
     };
 
-    return math::sqrtf64(ret: f64): f32;
+    return sqrtf32(ret);
 };
 
 @test fn vec3norm() void = {
     const v1: vec3 = [1f32, 1f32, 1f32];
-    const f1 = math::sqrtf64(3f64): f32;
+    const f1 = sqrtf32(3f32);
 
     assert(vec3norm(v1) == f1, "vector norm incorrect");
 };

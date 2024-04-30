@@ -56,7 +56,7 @@ export fn vec2norm(v1: vec2) f32 = {
         ret += v1[i] * v1[i];
     };
 
-    return math::sqrtf64(ret: f64): f32;
+    return sqrtf32(ret);
 };
 
 @test fn vec2norm() void = {
@@ -200,6 +200,17 @@ export fn vec2max(vectors: vec2...) vec2 = {
     const ret: vec2 = [4f32, 5f32];
 
     assert(vec2eq(vec2max(v1, v2, v3, v4), ret), "vec2max incorrect");
+};
+
+export fn vec2dist(v1: vec2, v2: vec2) f32 = {
+    const vec = vec2add(v1, vec2fmul(-1f32, v2));
+
+    let ret = 0f32;
+    for (let i = 0z; i < len(v1); i += 1) {
+        ret += vec[i] * vec[i];
+    };
+
+    return sqrtf32(ret);
 };
 
 export fn vec2print(v1: vec2) void = {

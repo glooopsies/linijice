@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Linijice
+Comment=Vector image manipulation program
+Icon=rs.ac.bg.matf.linijice
+Exec=linijice
+Terminal=false
+Type=Application
+Categories=Graphics
+StartupNotify=true
+StartupWMClass=linijice

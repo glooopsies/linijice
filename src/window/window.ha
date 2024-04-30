@@ -10,11 +10,15 @@ use gtk4;
 
 use src::g;
 
+use fmt;
+
 let window = null: *gtk4::Window;
 
 fn resources_init(resources: str) (void|errors::invalid) = {
 	const gresources = strings::concat(resources, "/data.gresource\0");
 	defer free(gresources);
+
+	fmt::printfln(gresources)!;
 
 	const gresources = gio::resource_load(c::nulstr(gresources), null);
 	if (gresources == null) {

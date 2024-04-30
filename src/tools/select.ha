@@ -34,7 +34,7 @@ fn select_down(point: math::vec2, uniform: bool = false) void = {
     let scene = nodes::get_scene();
 
     selection_move = false;
-    for (const rect .. scene.selection_mask) {
+    for (const rect .. scene.selected) {
         const box = rect.bounding_box(rect);
 
         if ((box[0][0] <= point[0] && box[0][1] <= point[1]) &&
@@ -118,6 +118,8 @@ fn select_up(vec: math::vec2, uniform: bool = false) void = {
         };
 
         for (const node .. scene.selected) {
+            if (node._type == nodes::node_type::BEZIER) { continue; };
+
             const box = node.bounding_box(node);
 
             const w = box[1][0] - box[0][0];
@@ -132,6 +134,7 @@ fn select_up(vec: math::vec2, uniform: bool = false) void = {
 
 export fn select_all() void = {
     deselect();
+
     let scene = nodes::get_scene();
 
     for (let layer &.. scene.layers) {
@@ -141,6 +144,8 @@ export fn select_all() void = {
     };
 
     for (const node .. scene.selected) {
+        if (node._type == nodes::node_type::BEZIER) { continue; };
+
         const box = node.bounding_box(node);
 
         const w = box[1][0] - box[0][0];

@@ -20,6 +20,7 @@ const tools = [
     ("tool_rect\0", &rect),
     ("tool_ellipse\0", &ellipse),
     ("tool_bezier\0", &bezier),
+    ("tool_bezier-control\0", &bezier_controls),
     ("tool_move\0", &move),
     ("tool_select\0", &select),
 ];

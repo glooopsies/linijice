@@ -11,19 +11,6 @@ index 1a56721..76d6ead 100644
  
  DESTDIR =
  PREFIX = /usr/local
-diff --git a/format/fastxml/parser.ha b/format/fastxml/parser.ha
-index f970ac5..5dc1b52 100644
---- a/format/fastxml/parser.ha
-+++ b/format/fastxml/parser.ha
-@@ -369,7 +369,7 @@ fn scan_charref(par: *parser) (rune | error) = {
- 	if (len(memio::string(&par.entbuf)!) == 0) {
- 		return par.line: syntaxerr;
- 	};
--	match (strconv::stou32b(memio::string(&par.entbuf)!, base)) {
-+	match (strconv::stou32(memio::string(&par.entbuf)!, base)) {
- 	case let u: u32 =>
- 		return u: rune;
- 	case (strconv::invalid | strconv::overflow) =>
 diff --git a/generate4 b/generate4
 index de2eb6f..85b26d1 100755
 --- a/generate4
@@ -52,26 +39,3 @@ index de2eb6f..85b26d1 100755
 -	/usr/share/gir-1.0/Gtk-4.0.gir
 +	/usr/share/gir-1.0/Gtk-4.0.gir \
 +	/usr/share/gir-1.0/Adw-1.gir
-diff --git a/gir/parse.ha b/gir/parse.ha
-index 91c55d4..84198de 100644
---- a/gir/parse.ha
-+++ b/gir/parse.ha
-@@ -439,7 +439,7 @@ fn parse_member(parser: *xml::parser, members: *opaque) (void | error) = {
- };
- 
- // callable
--fn parse_callable(callable: *callable) [17]scan = [
-+fn parse_callable(callable: *callable) [20]scan = [
- 	("introspectable", null),
- 	("deprecated", null),
- 	("deprecated-version", null),
-@@ -457,6 +457,9 @@ fn parse_callable(callable: *callable) [17]scan = [
- 	("shadows", &callable.shadows),
- 	("throws", &callable.throws),
- 	("moved-to", null),
-+	("glib:async-func", null),
-+	("glib:sync-func", null),
-+	("glib:finish-func", null)
- ];
- fn parse_parameters(parser: *xml::parser, parameters: *opaque) (void | error) = {
- 	return parse_element(parser, "parameters",

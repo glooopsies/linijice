@@ -1,14 +1,16 @@
-all: build/main
-
+APPNAME = linijice
 PREFIX = build
 BINDIR = $(PREFIX)/bin
-RESDIR = $(PREFIX)/resources
+SHAREDIR = $(PREFIX)/share
+RESDIR = $(SHAREDIR)/$(APPNAME)
 BINOUT = build
 RESOUT = build/resources
 
-.PHONY: $(BINOUT)/main
+.PHONY: $(BINOUT)/$(APPNAME)
 
-$(BINOUT)/main: $(RESOUT)/builder.ui $(RESOUT)/shaders $(RESOUT)/data.gresource build
+all: $(BINOUT)/$(APPNAME)
+
+$(BINOUT)/$(APPNAME): $(RESOUT)/builder.ui $(RESOUT)/shaders $(RESOUT)/data.gresource build
 	hare build \
 		-j 4 \
 		$$(pkg-config --libs-only-l --static libadwaita-1 epoxy) \
@@ -28,11 +30,27 @@ $(RESOUT)/data.gresource: resources/data.gresource.xml $(RESOUT)
 $(RESOUT):
 	mkdir -p build/resources
 
-install: $(BINOUT)/main
+$(SHAREDIR)/applications: resources/rs.ac.bg.matf.linijice.desktop
+	mkdir -p $@
+	cp $< $@
+
+$(SHAREDIR)/icons/hicolor/scalable/apps: resources/icons/rs.ac.bg.matf.linijice.svg
+	mkdir -p $@
+	cp $< $@
+
+install: $(BINOUT)/$(APPNAME) $(SHAREDIR)/icons/hicolor/scalable/apps $(SHAREDIR)/applications
 	install -m755 $< "$(BINDIR)"
 	cp -r "$(RESOUT)" "$(RESDIR)"
+	update-desktop-database
 
-run: $(BINOUT)/main
+uninstall:
+	rm "$(BINDIR)/$(APPNAME)"
+	rm -r "$(RESDIR)"
+	rm $(SHAREDIR)/applications/rs.ac.bg.matf.linijice.desktop
+	rm $(SHAREDIR)/icons/hicolor/scalable/apps/rs.ac.bg.matf.linijice.svg
+	update-desktop-database
+
+run: $(BINOUT)/$(APPNAME)
 	./$<
 
 flatpak:

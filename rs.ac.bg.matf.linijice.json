@@ -3,7 +3,7 @@
   "runtime": "org.gnome.Platform",
   "runtime-version": "46",
   "sdk": "org.gnome.Sdk",
-  "command": "main",
+  "command": "linijice",
   "finish-args": [
     "--share=ipc",
     "--socket=wayland",
@@ -93,8 +93,6 @@
       "build-commands": [
         "./generate4",
         "sed -i '/#/d' bindings/harfbuzz/_generated.ha",
-        "sed -i '/#/d' bindings/glib/_generated.ha",
-        "sed -i '/gobject/d' bindings/glib/_generated.ha",
         "make",
         "make install4 PREFIX=/app"
       ],
@@ -132,7 +130,7 @@
       "name": "linijice",
       "buildsystem": "simple",
       "build-commands": [
-        "make install"
+        "make install PREFIX=/app"
       ],
       "sources": [
         {
