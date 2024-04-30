@@ -79,7 +79,7 @@
         {
           "type": "git",
           "url": "https://git.sr.ht/~sircmpwn/hare",
-          "tag": "master"
+          "tag": "0cd51184a7acdfd4ef20195d1648622b04477293"
         },
         {
           "type": "patch",
@@ -100,7 +100,7 @@
         {
           "type": "git",
           "url": "https://git.sr.ht/~yerinalexey/hare-gi",
-          "branch": "master"
+          "tag": "c913c8e1ce6479c24361f8628e9bc07432878f62"
         },
         {
           "type": "patch",
@@ -118,7 +118,7 @@
         {
           "type": "git",
           "url": "https://git.sr.ht/~sircmpwn/hare-xml",
-          "branch": "master"
+          "tag": "b127b9637187e8b5f1052c2ffc41b4746f692481"
         },
         {
           "type": "patch",
